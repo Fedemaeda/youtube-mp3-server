@@ -74,15 +74,20 @@ def download():
         if not os.path.exists(mp3_filename):
             return jsonify({'error': 'Failed to generate MP3 file'}), 500
 
-        @after_this_request
-        def remove_file(response):
-            try:
-                os.remove(mp3_filename)
-            except Exception as e:
-                app.logger.error("Error removing or closing downloaded file handle", e)
-            return response
+        # Read the file fully into memory first, then delete it
+        # This prevents race condition where file is deleted before browser finishes downloading
+        import io
+        with open(mp3_filename, 'rb') as f:
+            file_data = io.BytesIO(f.read())
+        os.remove(mp3_filename)
 
-        return send_file(mp3_filename, as_attachment=True, download_name=os.path.basename(mp3_filename))
+        file_data.seek(0)
+        return send_file(
+            file_data,
+            as_attachment=True,
+            download_name=os.path.basename(mp3_filename),
+            mimetype='audio/mpeg'
+        )
 
     except Exception as e:
         app.logger.error(f"Download error: {str(e)}")
