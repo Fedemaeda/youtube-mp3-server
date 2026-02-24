@@ -33,10 +33,13 @@ def cookies_status():
     """Check if a cookies file has been uploaded."""
     return jsonify({'has_cookies': os.path.exists(COOKIES_FILE)})
 
-@app.route('/api/download', methods=['POST'])
+@app.route('/api/download', methods=['POST', 'GET'])
 def download():
-    data = request.get_json()
-    url = data.get('url')
+    if request.method == 'POST':
+        data = request.get_json()
+        url = data.get('url') if data else None
+    else:
+        url = request.args.get('url')
 
     if not url:
         return jsonify({'error': 'URL is required'}), 400

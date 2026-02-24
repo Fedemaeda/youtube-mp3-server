@@ -50,42 +50,22 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus('Sending request to server...', 'info');
 
         try {
-            const response = await fetch(`${serverUrl}/api/download`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url })
+            // Instead of downloading into the popup memory (which closes and kills the download),
+            // we will instruct Chrome's download manager to download directly from the server API.
+            // Since it's a POST request originally, we will append the url as a GET parameter.
+
+            const getUrl = new URL(`${serverUrl}/api/download`);
+            getUrl.searchParams.append('url', url);
+
+            chrome.downloads.download({
+                url: getUrl.toString(),
+                saveAs: true
+            }, () => {
+                setStatus('Download started! Check your downloads.', 'success');
+                setTimeout(() => {
+                    window.close(); // Close popup
+                }, 2000);
             });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `Server Error: ${response.status}`);
-            }
-
-            // Get filename
-            let filename = 'audio.mp3';
-            const contentDisposition = response.headers.get('Content-Disposition');
-            if (contentDisposition) {
-                const match = contentDisposition.match(/filename="?(.+)"?/);
-                if (match && match.length === 2) filename = match[1];
-            }
-
-            // Download file via Chrome downloads API
-            const blob = await response.blob();
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                const base64data = reader.result;
-                chrome.downloads.download({
-                    url: base64data,
-                    filename: filename,
-                    saveAs: true
-                }, () => {
-                    setStatus('Download ready!', 'success');
-                    setTimeout(() => {
-                        window.close(); // Close popup
-                    }, 2000);
-                });
-            };
 
         } catch (error) {
             console.error(error);
