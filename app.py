@@ -6,7 +6,9 @@ import yt_dlp
 
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests from the Chrome Extension
-DOWNLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'downloads')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DOWNLOAD_FOLDER = os.path.join(BASE_DIR, 'downloads')
+COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 
 if not os.path.exists(DOWNLOAD_FOLDER):
     os.makedirs(DOWNLOAD_FOLDER)
@@ -14,6 +16,22 @@ if not os.path.exists(DOWNLOAD_FOLDER):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/api/upload-cookies', methods=['POST'])
+def upload_cookies():
+    """Endpoint to upload a YouTube cookies.txt file for bot bypass."""
+    if 'cookies' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    f = request.files['cookies']
+    if f.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    f.save(COOKIES_FILE)
+    return jsonify({'success': True, 'message': 'Cookies uploaded successfully!'})
+
+@app.route('/api/cookies-status', methods=['GET'])
+def cookies_status():
+    """Check if a cookies file has been uploaded."""
+    return jsonify({'has_cookies': os.path.exists(COOKIES_FILE)})
 
 @app.route('/api/download', methods=['POST'])
 def download():
@@ -42,10 +60,13 @@ def download():
         'sleep_interval_requests': 1,
     }
 
+    # Use cookies if available (required for cloud servers blocked by YouTube)
+    if os.path.exists(COOKIES_FILE):
+        ydl_opts['cookiefile'] = COOKIES_FILE
+
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
-            # yt-dlp's prepare_filename gives the original extension, we need to swap to .mp3 since postprocessor changes it
             raw_filename = ydl.prepare_filename(info)
             base, _ = os.path.splitext(raw_filename)
             mp3_filename = base + '.mp3'
@@ -68,5 +89,4 @@ def download():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Run the server on port 5000. Not suitable for production.
     app.run(host='0.0.0.0', port=5000, debug=True)

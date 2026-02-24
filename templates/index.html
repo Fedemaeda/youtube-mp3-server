@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
     <div class="background-elements">
         <div class="blob blob-1"></div>
@@ -25,7 +27,8 @@
 
             <form id="download-form">
                 <div class="input-group">
-                    <input type="url" id="url-input" placeholder="Paste YouTube link here..." required autocomplete="off">
+                    <input type="url" id="url-input" placeholder="Paste YouTube link here..." required
+                        autocomplete="off">
                 </div>
                 <button type="submit" id="submit-btn">
                     <span class="btn-text">Extract Audio</span>
@@ -34,9 +37,31 @@
             </form>
 
             <div id="status-message" class="status-message"></div>
+
+            <!-- Cookie Authentication Section -->
+            <details class="cookie-section">
+                <summary>🔑 Authentication (required on cloud)</summary>
+                <div class="cookie-content">
+                    <p class="cookie-hint">If you get a "bot" error, upload your YouTube cookies to authenticate.</p>
+                    <ol class="cookie-steps">
+                        <li>Install the <strong><a
+                                    href="https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc"
+                                    target="_blank">Get cookies.txt LOCALLY</a></strong> extension in Chrome.</li>
+                        <li>Go to <a href="https://youtube.com" target="_blank">YouTube.com</a> while logged in.</li>
+                        <li>Click the extension and export the cookies file.</li>
+                        <li>Upload it here:</li>
+                    </ol>
+                    <div id="cookie-status" class="cookie-status"></div>
+                    <form id="cookie-form">
+                        <input type="file" id="cookies-file" accept=".txt" style="display:none">
+                        <button type="button" id="cookie-upload-btn" class="secondary-btn">Upload cookies.txt</button>
+                    </form>
+                </div>
+            </details>
         </div>
     </main>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

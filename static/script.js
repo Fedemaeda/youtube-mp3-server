@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const url = urlInput.value.trim();
         if (!url) return;
 
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             a.download = filename;
             document.body.appendChild(a);
             a.click();
-            
+
             // Clean up
             window.URL.revokeObjectURL(downloadUrl);
             document.body.removeChild(a);
@@ -85,6 +85,49 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus(error.message, 'error');
         } finally {
             setLoading(false);
+        }
+    });
+
+    // --- Cookie Upload Logic ---
+    const cookieUploadBtn = document.getElementById('cookie-upload-btn');
+    const cookiesFileInput = document.getElementById('cookies-file');
+    const cookieStatus = document.getElementById('cookie-status');
+
+    // Check current cookie status on load
+    fetch('/api/cookies-status')
+        .then(r => r.json())
+        .then(data => {
+            if (data.has_cookies) {
+                cookieStatus.textContent = '✅ Cookies loaded — authenticated as a real user.';
+                cookieStatus.className = 'cookie-status ok';
+            } else {
+                cookieStatus.textContent = '⚠️ No cookies uploaded. May fail on cloud servers.';
+                cookieStatus.className = 'cookie-status missing';
+            }
+        });
+
+    cookieUploadBtn.addEventListener('click', () => cookiesFileInput.click());
+
+    cookiesFileInput.addEventListener('change', async () => {
+        const file = cookiesFileInput.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('cookies', file);
+        cookieStatus.textContent = 'Uploading...';
+        cookieStatus.className = 'cookie-status';
+        try {
+            const res = await fetch('/api/upload-cookies', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (res.ok) {
+                cookieStatus.textContent = '✅ Cookies uploaded successfully!';
+                cookieStatus.className = 'cookie-status ok';
+            } else {
+                cookieStatus.textContent = `❌ Error: ${data.error}`;
+                cookieStatus.className = 'cookie-status';
+            }
+        } catch (e) {
+            cookieStatus.textContent = '❌ Upload failed.';
+            cookieStatus.className = 'cookie-status';
         }
     });
 });
