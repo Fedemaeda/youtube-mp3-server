@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             chrome.downloads.download({
                 url: getUrl.toString(),
-                saveAs: true
+                saveAs: false
             }, () => {
                 setStatus('Download started! Check your downloads.', 'success');
                 setTimeout(() => {
