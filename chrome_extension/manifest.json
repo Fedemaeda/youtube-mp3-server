@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "StreamRip - YouTube MP3",
+  "version": "1.0",
+  "description": "Download any YouTube video as an MP3 file via a single click using your Render server.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "downloads"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "host_permissions": [
+    "https://*.youtube.com/*",
+    "https://*.onrender.com/*",
+    "http://127.0.0.1:5000/*"
+  ]
+}

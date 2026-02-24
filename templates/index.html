@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamRip | YouTube to MP3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container">
+        <div class="glass-panel">
+            <header>
+                <h1>StreamRip</h1>
+                <p>Convert YouTube videos to high-quality MP3s instantly.</p>
+            </header>
+
+            <form id="download-form">
+                <div class="input-group">
+                    <input type="url" id="url-input" placeholder="Paste YouTube link here..." required autocomplete="off">
+                </div>
+                <button type="submit" id="submit-btn">
+                    <span class="btn-text">Extract Audio</span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+            </form>
+
+            <div id="status-message" class="status-message"></div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="glass-panel">
+        <header>
+            <h1>StreamRip</h1>
+            <p>Remote MP3 Downloader</p>
+        </header>
+
+        <div id="url-container">
+            <input type="text" id="youtube-url" readonly>
+        </div>
+
+        <button id="download-btn">
+            <span class="btn-text">Download MP3</span>
+            <span class="spinner" style="display: none;"></span>
+        </button>
+
+        <div id="status-message" class="status-message"></div>
+
+        <footer>
+            <button id="settings-btn" class="text-btn">⚙️ Configure Server</button>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

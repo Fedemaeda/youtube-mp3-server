@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="popup.css">
+    <style>
+        body {
+            width: 400px;
+            padding: 20px;
+        }
+
+        .glass-panel {
+            padding: 30px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-panel">
+        <header>
+            <h1>Server Config</h1>
+            <p>Connect to your Render.com server</p>
+        </header>
+
+        <div>
+            <label for="server-url">Render Application URL</label>
+            <input type="text" id="server-url" placeholder="https://your-app-name.onrender.com">
+            <div class="hint">Make sure to include https://</div>
+        </div>
+
+        <button id="save-btn">
+            <span class="btn-text">Save Configuration</span>
+        </button>
+
+        <div id="status-message" class="status-message"></div>
+    </div>
+    <script src="options.js"></script>
+</body>
+
+</html>
