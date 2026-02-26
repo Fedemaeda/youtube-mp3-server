@@ -10,12 +10,4 @@ services:
     environment:
       - FLASK_ENV=production
       - PROXY_URL=socks5://127.0.0.1:40000
-      - POT_PROVIDER_URL=http://127.0.0.1:8080/token
-    depends_on:
-      - po-token-generator
-    restart: always
-
-  po-token-generator:
-    image: quay.io/invidious/youtube-po-token-generator:latest
-    network_mode: host
     restart: always

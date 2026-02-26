@@ -87,7 +87,8 @@ def download():
         'extractor_args': {
             'youtube': {
                 'player_client': ['ios', 'android', 'tv', 'web', 'default'],
-                'player_skip': ['web', 'web_creator']
+                'player_skip': ['web', 'web_creator'],
+                'remote_components': ['ejs:github', 'ejs:npm']
             }
         },
         'sleep_interval_requests': 2,
@@ -95,6 +96,7 @@ def download():
         'ignoreerrors': False,
         'nocheckcertificate': True,
         'prefer_insecure': True,
+        'allow_unsecure_tools': True,
     }
 
     # Proxy logic
