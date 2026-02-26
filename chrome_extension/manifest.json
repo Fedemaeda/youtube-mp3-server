@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "StreamRip - YouTube MP3",
-  "version": "1.0",
-  "description": "Download any YouTube video as an MP3 file via a single click using your Render server.",
+  "version": "1.1",
+  "description": "Download any YouTube video as an MP3 file via a single click using your StreamRip server.",
   "permissions": [
     "activeTab",
     "storage",
@@ -18,6 +18,6 @@
   "host_permissions": [
     "https://*.youtube.com/*",
     "https://*.onrender.com/*",
-    "http://127.0.0.1:5000/*"
+    "http://144.22.61.82:5000/*"
   ]
 }

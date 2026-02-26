@@ -1,5 +1,6 @@
 import os
 import uuid
+import requests
 from flask import Flask, request, jsonify, render_template, send_file, after_this_request
 from flask_cors import CORS
 import yt_dlp
@@ -9,6 +10,32 @@ CORS(app)  # Allow cross-origin requests from the Chrome Extension
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOAD_FOLDER = os.path.join(BASE_DIR, 'downloads')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
+POT_PROVIDER_URL = os.environ.get('POT_PROVIDER_URL')
+PROXY_URL = os.environ.get('PROXY_URL', 'socks5://host.docker.internal:40000')
+
+def is_proxy_reachable(proxy_url):
+    """Check if the SOCKS5 proxy is reachable."""
+    import socket
+    try:
+        # Extract host and port from proxy_url
+        parts = proxy_url.split('://')[-1].split(':')
+        host = parts[0]
+        port = int(parts[1])
+        with socket.create_connection((host, port), timeout=2):
+            return True
+    except Exception:
+        return False
+    return False
+
+def get_po_token():
+    """Fetch a PO token from the environment or a sidecar service."""
+    # Try environment variable first (manual override)
+    po_token = os.environ.get('PO_TOKEN')
+    if po_token:
+        return po_token, None
+        
+    # Future: Add sidecar service call here
+    return None, None
 
 if not os.path.exists(DOWNLOAD_FOLDER):
     os.makedirs(DOWNLOAD_FOLDER)
@@ -56,12 +83,36 @@ def download():
         }],
         'outtmpl': output_template,
         'noplaylist': True,
-        'quiet': True,
-        'source_address': '0.0.0.0',
-        # Anti-bot detection measures
-        'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
-        'sleep_interval_requests': 1,
+        'quiet': False,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['ios', 'android', 'tv', 'web', 'default'],
+                'player_skip': ['web', 'web_creator']
+            }
+        },
+        'sleep_interval_requests': 2,
+        'socket_timeout': 30,
+        'ignoreerrors': False,
+        'nocheckcertificate': True,
+        'prefer_insecure': True,
     }
+
+    # Proxy logic
+    if os.environ.get('FLASK_ENV') == 'production':
+        if is_proxy_reachable(PROXY_URL):
+            app.logger.info(f"Using proxy: {PROXY_URL}")
+            ydl_opts['proxy'] = PROXY_URL
+        else:
+            app.logger.warning("Proxy is unreachable. Falling back to direct connection.")
+    else:
+        app.logger.info("Running in development mode, no proxy used.")
+
+    # Fetch PO Token if on cloud (helps bypass "Sign in to confirm you're not a bot")
+    po_token, visitor_data = get_po_token()
+    if po_token and visitor_data:
+        app.logger.info("Using PO Token for download")
+        ydl_opts['extractor_args']['youtube']['po_token'] = [f"web+{po_token}"]
+        # Note: some newer versions of yt-dlp might need different formatting for extractor-args
 
     # Use cookies if available (required for cloud servers blocked by YouTube)
     if os.path.exists(COOKIES_FILE):
@@ -93,8 +144,23 @@ def download():
         )
 
     except Exception as e:
-        app.logger.error(f"Download error: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        error_msg = str(e)
+        app.logger.error(f"Download error: {error_msg}")
+        
+        # User-friendly error for bot detection
+        if "Sign in to confirm you're not a bot" in error_msg or "confirm you're not a bot" in error_msg:
+            return jsonify({
+                'error': 'YouTube detected a bot challenge. Please upload fresh cookies via the Authentication tab.',
+                'code': 'BOT_DETECTION'
+            }), 403
+        
+        if "Requested format is not available" in error_msg:
+            return jsonify({
+                'error': 'Requested format not available. This usually means YouTube is blocking the server. Try refreshing cookies.',
+                'code': 'FORMAT_UNAVAILABLE'
+            }), 400
+
+        return jsonify({'error': error_msg}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

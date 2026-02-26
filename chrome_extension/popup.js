@@ -47,13 +47,30 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadBtn.disabled = true;
         btnText.style.display = 'none';
         spinner.style.display = 'block';
-        setStatus('Sending request to server...', 'info');
+        setStatus('Connecting to server...', 'info');
 
         try {
-            // Instead of downloading into the popup memory (which closes and kills the download),
-            // we will instruct Chrome's download manager to download directly from the server API.
-            // Since it's a POST request originally, we will append the url as a GET parameter.
+            // Step 1: Tell the server to start the download/conversion
+            // We'll use the same API but we'll fetch it first to check for errors
+            const response = await fetch(`${serverUrl}/api/download`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
 
+            if (!response.ok) {
+                let errorMessage = 'Server error';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = await response.text() || response.statusText;
+                }
+                throw new Error(errorMessage);
+            }
+
+            // Step 2: If successful, the server already processed it.
+            // Now we trigger the actual file download.
             const getUrl = new URL(`${serverUrl}/api/download`);
             getUrl.searchParams.append('url', url);
 
@@ -61,10 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 url: getUrl.toString(),
                 saveAs: false
             }, () => {
-                setStatus('Download started! Check your downloads.', 'success');
+                setStatus('Download started! Check folder.', 'success');
                 setTimeout(() => {
-                    window.close(); // Close popup
-                }, 2000);
+                    window.close();
+                }, 3000);
             });
 
         } catch (error) {

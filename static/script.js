@@ -48,8 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to download audio');
+                let errorMessage = 'Failed to download audio';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    // If response is not JSON, use the status text
+                    errorMessage = await response.text() || response.statusText;
+                }
+                throw new Error(errorMessage);
             }
 
             // Get the filename from the Content-Disposition header if available

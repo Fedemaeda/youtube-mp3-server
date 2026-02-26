@@ -1,16 +1,22 @@
 FROM python:3.11-slim
 
-# Install ffmpeg which is required by yt-dlp to extract MP3s
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+# Install ffmpeg and nodejs (required for yt-dlp signature bypass)
+RUN apt-get update && apt-get install -y ffmpeg nodejs curl unzip && \
+    curl -fsSL https://deno.land/install.sh | sh && \
+    ln -s /root/.deno/bin/deno /usr/bin/deno && \
+    ln -s /usr/bin/nodejs /usr/bin/node || true && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application files
 COPY . .
 
-# Run the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "--timeout", "120", "--workers", "2", "app:app"]
+# Create downloads directory
+RUN mkdir -p downloads && chmod 777 downloads
+
+EXPOSE 5000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app", "--workers", "2", "--timeout", "120"]
