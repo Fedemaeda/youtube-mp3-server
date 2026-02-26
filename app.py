@@ -86,9 +86,9 @@ def download():
         'quiet': False,
         'extractor_args': {
             'youtube': {
-                'player_client': ['ios', 'android', 'tv', 'web', 'default'],
-                'player_skip': ['web', 'web_creator'],
-                'remote_components': ['ejs:github', 'ejs:npm']
+                'player_client': ['tv', 'web', 'ios', 'android', 'default'],
+                'player_skip': ['web_creator'],
+                'remote_components': 'ejs:github,ejs:npm'
             }
         },
         'sleep_interval_requests': 2,
