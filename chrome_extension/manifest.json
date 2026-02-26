@@ -18,6 +18,8 @@
   "host_permissions": [
     "https://*.youtube.com/*",
     "https://*.onrender.com/*",
+    "https://*.ngrok-free.app/*",
+    "https://*.ngrok.io/*",
     "http://144.22.61.82:5000/*"
   ]
 }

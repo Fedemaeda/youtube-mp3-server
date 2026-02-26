@@ -54,7 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // We'll use the same API but we'll fetch it first to check for errors
             const response = await fetch(`${serverUrl}/api/download`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': '69420'
+                },
                 body: JSON.stringify({ url })
             });
 
@@ -76,7 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             chrome.downloads.download({
                 url: getUrl.toString(),
-                saveAs: false
+                saveAs: false,
+                headers: [
+                    { name: 'ngrok-skip-browser-warning', value: '69420' }
+                ]
             }, () => {
                 setStatus('Download started! Check folder.', 'success');
                 setTimeout(() => {
