@@ -76,10 +76,12 @@ def download_extension():
 @app.route('/api/download', methods=['POST', 'GET'])
 def download():
     if request.method == 'POST':
-        data = request.get_json()
-        url = data.get('url') if data else None
+        data = request.get_json() or {}
+        url = data.get('url')
+        target_format = data.get('format', 'mp3')
     else:
         url = request.args.get('url')
+        target_format = request.args.get('format', 'mp3')
 
     if not url:
         return jsonify({'error': 'URL is required'}), 400
@@ -88,12 +90,6 @@ def download():
     output_template = os.path.join(DOWNLOAD_FOLDER, f'%(title)s_{unique_id}.%(ext)s')
 
     ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
         'outtmpl': output_template,
         'noplaylist': True,
         'quiet': False,
@@ -111,6 +107,16 @@ def download():
         'nocheckcertificate': True,
         'prefer_insecure': True,
     }
+
+    if target_format == 'mp4':
+        ydl_opts['format'] = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
+    else:  # Default to mp3
+        ydl_opts['format'] = 'bestaudio/best'
+        ydl_opts['postprocessors'] = [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }]
 
     # Proxy logic
     if os.environ.get('FLASK_ENV') == 'production':
@@ -136,27 +142,29 @@ def download():
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
-            raw_filename = ydl.prepare_filename(info)
-            base, _ = os.path.splitext(raw_filename)
-            mp3_filename = base + '.mp3'
+            downloaded_file = ydl.prepare_filename(info)
+            if target_format == 'mp3':
+                base, _ = os.path.splitext(downloaded_file)
+                downloaded_file = base + '.mp3'
 
-        if not os.path.exists(mp3_filename):
-            return jsonify({'error': 'Failed to generate MP3 file'}), 500
+        if not os.path.exists(downloaded_file):
+            return jsonify({'error': f'Failed to generate {target_format} file'}), 500
 
         # Read the file fully into memory first, then delete it
         # This prevents race condition where file is deleted before browser finishes downloading
         import io
-        with open(mp3_filename, 'rb') as f:
+        with open(downloaded_file, 'rb') as f:
             file_data = io.BytesIO(f.read())
-        os.remove(mp3_filename)
+        os.remove(downloaded_file)
 
         file_data.seek(0)
-        clean_title = info.get('title', 'audio').replace('/', '_').replace('\\', '_')
+        clean_title = info.get('title', 'video').replace('/', '_').replace('\\', '_')
+        mimetype = 'video/mp4' if target_format == 'mp4' else 'audio/mpeg'
         return send_file(
             file_data,
             as_attachment=True,
-            download_name=f"{clean_title}.mp3",
-            mimetype='audio/mpeg'
+            download_name=f"{clean_title}.{target_format}",
+            mimetype=mimetype
         )
 
     except Exception as e:
