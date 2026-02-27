@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('download-form');
     const urlInput = document.getElementById('url-input');
     const submitBtn = document.getElementById('submit-btn');
-    const btnText = document.querySelector('.btn-text');
-    const spinner = document.querySelector('.spinner');
+    const mp4Btn = document.getElementById('mp4-btn');
     const statusMessage = document.getElementById('status-message');
 
     function setStatus(message, type) {
@@ -16,26 +15,38 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.textContent = '';
     }
 
-    function setLoading(isLoading, message = 'Downloading and converting... This may take a moment.') {
+    function setLoading(isLoading, btn, message = 'Downloading and converting... This may take a moment.') {
+        const btnText = btn.querySelector('.btn-text');
+        const spinner = btn.querySelector('.spinner');
+
         if (isLoading) {
             submitBtn.disabled = true;
+            mp4Btn.disabled = true;
             btnText.style.display = 'none';
             spinner.style.display = 'block';
             setStatus(message, 'loading');
         } else {
             submitBtn.disabled = false;
+            mp4Btn.disabled = false;
             btnText.style.display = 'block';
             spinner.style.display = 'none';
         }
     }
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
+        handleDownload('mp3', submitBtn);
+    });
 
+    mp4Btn.addEventListener('click', () => {
+        handleDownload('mp4', mp4Btn);
+    });
+
+    async function handleDownload(format, btn) {
         const url = urlInput.value.trim();
         if (!url) return;
 
-        setLoading(true, 'Processing video... this may take up to a minute.');
+        setLoading(true, btn, `Processing ${format.toUpperCase()}... this may take up to a minute.`);
         clearStatus();
 
         try {
@@ -44,11 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url })
+                body: JSON.stringify({ url, format })
             });
 
             if (!response.ok) {
-                let errorMessage = 'Failed to download audio';
+                let errorMessage = `Failed to download ${format}`;
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.error || errorMessage;
@@ -59,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Update status for streaming phase
-            setStatus('Streaming audio to browser...', 'loading');
+            setStatus(`Streaming ${format.toUpperCase()} to browser...`, 'loading');
 
             const contentDisposition = response.headers.get('Content-Disposition');
-            let filename = 'audio.mp3';
+            let filename = `file.${format}`;
             if (contentDisposition && contentDisposition.includes('attachment')) {
                 const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
                 if (filenameMatch && filenameMatch.length === 2) {
@@ -94,9 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Download error:', error);
             setStatus(error.message, 'error');
         } finally {
-            setLoading(false);
+            setLoading(false, btn);
         }
-    });
+    }
 
     // --- Cookie Upload Logic ---
     const cookieUploadBtn = document.getElementById('cookie-upload-btn');

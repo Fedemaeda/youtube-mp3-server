@@ -30,10 +30,16 @@
                     <input type="url" id="url-input" placeholder="Paste YouTube link here..." required
                         autocomplete="off">
                 </div>
-                <button type="submit" id="submit-btn">
-                    <span class="btn-text">Extract Audio</span>
-                    <span class="spinner" style="display: none;"></span>
-                </button>
+                <div class="button-group">
+                    <button type="submit" id="submit-btn">
+                        <span class="btn-text">Extract Audio (MP3)</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                    <button type="button" id="mp4-btn" class="secondary-btn">
+                        <span class="btn-text">Download Video (MP4)</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                </div>
             </form>
 
             <div id="status-message" class="status-message"></div>
@@ -60,8 +66,8 @@
             </details>
 
             <div class="extension-download">
-                <p>Want to download directly from YouTube? 
-                   <a href="/api/download-extension" class="download-link">Download Chrome Extension</a>
+                <p>Want to download directly from YouTube?
+                    <a href="/api/download-extension" class="download-link">Download Chrome Extension</a>
                 </p>
             </div>
         </div>

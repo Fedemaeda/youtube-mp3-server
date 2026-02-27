@@ -331,23 +331,38 @@ button:disabled {
     color: var(--text-secondary);
 }
 
-.secondary-btn {
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid var(--glass-border);
-    color: var(--text-primary);
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.button-group {
+    display: flex;
+    gap: 12px;
     width: 100%;
 }
 
+.button-group button {
+    flex: 1;
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 56px;
+    position: relative;
+    overflow: hidden;
+}
+
 .secondary-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px #3b82f6;
 }
 
 .extension-download {
