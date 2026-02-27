@@ -22,10 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get current active tab URL
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const currentUrl = tabs[0].url;
-        if (currentUrl.includes('youtube.com/watch') || currentUrl.includes('youtu.be/')) {
+        const isYouTube = currentUrl.includes('youtube.com/watch') || currentUrl.includes('youtu.be/');
+        const isX = currentUrl.includes('x.com/') || currentUrl.includes('twitter.com/');
+
+        if (isYouTube || isX) {
             urlInput.value = currentUrl;
         } else {
-            urlInput.value = 'Not a YouTube video';
+            urlInput.value = 'No supported video found';
             downloadBtn.disabled = true;
             downloadMp4Btn.disabled = true;
         }

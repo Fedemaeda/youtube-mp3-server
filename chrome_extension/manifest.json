@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "StreamRip - YouTube MP3",
-  "version": "1.1",
-  "description": "Download any YouTube video as an MP3 file via a single click using your StreamRip server.",
+  "name": "ZenRip - Media Downloader",
+  "version": "1.2",
+  "description": "Download videos and audio from YouTube and X.com with Zen-like simplicity using your ZenRip server.",
   "permissions": [
     "activeTab",
     "storage",
@@ -17,6 +17,8 @@
   },
   "host_permissions": [
     "https://*.youtube.com/*",
+    "https://*.x.com/*",
+    "https://*.twitter.com/*",
     "https://*.onrender.com/*",
     "https://*.ngrok-free.app/*",
     "https://*.ngrok.io/*",

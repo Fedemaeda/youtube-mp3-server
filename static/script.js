@@ -1,4 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Mouse Follower Logic ---
+    const glow = document.getElementById('cursor-glow');
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let currentX = mouseX;
+    let currentY = mouseY;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    function animate() {
+        // Smooth interpolation (laziness)
+        currentX += (mouseX - currentX) * 0.1;
+        currentY += (mouseY - currentY) * 0.1;
+
+        if (glow) {
+            glow.style.transform = `translate(calc(${currentX}px - 50%), calc(${currentY}px - 50%))`;
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+
     const form = document.getElementById('download-form');
     const urlInput = document.getElementById('url-input');
     const submitBtn = document.getElementById('submit-btn');
