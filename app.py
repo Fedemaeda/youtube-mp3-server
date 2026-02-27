@@ -159,12 +159,14 @@ def download():
 
         file_data.seek(0)
         import re
-        import urllib.parse
         clean_title = info.get('title', 'video')
-        # Remove non-ascii and special chars, then URL-encode just in case
-        clean_title = re.sub(r'[^\w\s-]', '', clean_title).strip()
-        clean_title = urllib.parse.quote(clean_title)
-        
+        # Replace spaces and special chars with underscores
+        clean_title = re.sub(r'[^\w\-]', '_', clean_title)
+        # Remove consecutive underscores
+        clean_title = re.sub(r'_+', '_', clean_title).strip('_')
+        # Limit length to avoid OS filename limits
+        clean_title = clean_title[:100] if clean_title else f'video_{unique_id[:8]}'
+
         mimetype = 'video/mp4' if target_format == 'mp4' else 'audio/mpeg'
         return send_file(
             file_data,
