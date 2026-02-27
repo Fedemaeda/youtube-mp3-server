@@ -47,33 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadBtn.disabled = true;
         btnText.style.display = 'none';
         spinner.style.display = 'block';
-        setStatus('Connecting to server...', 'info');
+        setStatus('Processing video... this may take a moment.', 'info');
 
         try {
-            // Step 1: Tell the server to start the download/conversion
-            // We'll use the same API but we'll fetch it first to check for errors
-            const response = await fetch(`${serverUrl}/api/download`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': '69420'
-                },
-                body: JSON.stringify({ url })
-            });
-
-            if (!response.ok) {
-                let errorMessage = 'Server error';
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.error || errorMessage;
-                } catch (e) {
-                    errorMessage = await response.text() || response.statusText;
-                }
-                throw new Error(errorMessage);
-            }
-
-            // Step 2: If successful, the server already processed it.
-            // Now we trigger the actual file download.
             const getUrl = new URL(`${serverUrl}/api/download`);
             getUrl.searchParams.append('url', url);
 
@@ -83,20 +59,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: [
                     { name: 'ngrok-skip-browser-warning', value: '69420' }
                 ]
-            }, () => {
-                setStatus('Download started! Check folder.', 'success');
-                setTimeout(() => {
-                    window.close();
-                }, 3000);
+            }, (downloadId) => {
+                if (chrome.runtime.lastError) {
+                    console.error(chrome.runtime.lastError);
+                    setStatus(chrome.runtime.lastError.message, 'error');
+                    resetBtn();
+                    return;
+                }
+
+                setStatus('Downloading to folder...', 'info');
+
+                // Listener to track when the download is actually finished
+                const listener = (delta) => {
+                    if (delta.id === downloadId && delta.state) {
+                        if (delta.state.current === 'complete') {
+                            setStatus('Download complete!', 'success');
+                            chrome.downloads.onChanged.removeListener(listener);
+                            setTimeout(() => {
+                                resetBtn();
+                                window.close();
+                            }, 2000);
+                        } else if (delta.state.current === 'interrupted') {
+                            setStatus('Download failed or cancelled.', 'error');
+                            chrome.downloads.onChanged.removeListener(listener);
+                            resetBtn();
+                        }
+                    }
+                };
+                chrome.downloads.onChanged.addListener(listener);
             });
 
         } catch (error) {
             console.error(error);
             setStatus(error.message, 'error');
-        } finally {
-            downloadBtn.disabled = false;
-            btnText.style.display = 'block';
-            spinner.style.display = 'none';
+            resetBtn();
         }
     });
+
+    function resetBtn() {
+        downloadBtn.disabled = false;
+        btnText.style.display = 'block';
+        spinner.style.display = 'none';
+    }
 });
