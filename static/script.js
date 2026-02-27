@@ -16,12 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.textContent = '';
     }
 
-    function setLoading(isLoading) {
+    function setLoading(isLoading, message = 'Downloading and converting... This may take a moment.') {
         if (isLoading) {
             submitBtn.disabled = true;
             btnText.style.display = 'none';
             spinner.style.display = 'block';
-            setStatus('Downloading and converting... This may take a moment.', 'loading');
+            setStatus(message, 'loading');
         } else {
             submitBtn.disabled = false;
             btnText.style.display = 'block';
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = urlInput.value.trim();
         if (!url) return;
 
-        setLoading(true);
+        setLoading(true, 'Processing video... this may take up to a minute.');
         clearStatus();
 
         try {
@@ -53,13 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const errorData = await response.json();
                     errorMessage = errorData.error || errorMessage;
                 } catch (e) {
-                    // If response is not JSON, use the status text
                     errorMessage = await response.text() || response.statusText;
                 }
                 throw new Error(errorMessage);
             }
 
-            // Get the filename from the Content-Disposition header if available
+            // Update status for streaming phase
+            setStatus('Streaming audio to browser...', 'loading');
+
             const contentDisposition = response.headers.get('Content-Disposition');
             let filename = 'audio.mp3';
             if (contentDisposition && contentDisposition.includes('attachment')) {
@@ -69,8 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Create a blob from the response and trigger download
             const blob = await response.blob();
+
+            // Final phase: saving file
+            setStatus('Saving file...', 'loading');
+
             const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
@@ -79,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(a);
             a.click();
 
-            // Clean up
             window.URL.revokeObjectURL(downloadUrl);
             document.body.removeChild(a);
 

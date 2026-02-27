@@ -60,6 +60,19 @@ def cookies_status():
     """Check if a cookies file has been uploaded."""
     return jsonify({'has_cookies': os.path.exists(COOKIES_FILE)})
 
+@app.route('/api/download-extension')
+def download_extension():
+    """Endpoint to download the Chrome extension ZIP file."""
+    extension_path = os.path.join(BASE_DIR, 'extension.zip')
+    if os.path.exists(extension_path):
+        return send_file(
+            extension_path,
+            as_attachment=True,
+            download_name='StreamRip_Extension.zip',
+            mimetype='application/zip'
+        )
+    return jsonify({'error': 'Extension file not found'}), 404
+
 @app.route('/api/download', methods=['POST', 'GET'])
 def download():
     if request.method == 'POST':

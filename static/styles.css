@@ -349,3 +349,26 @@ button:disabled {
     background: rgba(255, 255, 255, 0.12);
     transform: translateY(-1px);
 }
+
+.extension-download {
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.download-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.download-link:hover {
+    color: var(--text-primary);
+    text-shadow: 0 0 10px var(--accent-glow);
+    transform: translateY(-1px);
+}
