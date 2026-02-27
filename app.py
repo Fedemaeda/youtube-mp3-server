@@ -138,10 +138,11 @@ def download():
         os.remove(mp3_filename)
 
         file_data.seek(0)
+        clean_title = info.get('title', 'audio').replace('/', '_').replace('\\', '_')
         return send_file(
             file_data,
             as_attachment=True,
-            download_name=os.path.basename(mp3_filename),
+            download_name=f"{clean_title}.mp3",
             mimetype='audio/mpeg'
         )
 
