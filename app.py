@@ -84,11 +84,12 @@ def download():
         'outtmpl': output_template,
         'noplaylist': True,
         'quiet': False,
+        'verbose': False,
+        'allow_unsecure_tools': True,
+        'remote_components': ['ejs:github', 'ejs:npm'],
         'extractor_args': {
             'youtube': {
-                'player_client': ['tv', 'web', 'ios', 'android', 'default'],
-                'player_skip': ['web_creator'],
-                'remote_components': 'ejs:github,ejs:npm'
+                'remote_components': ['ejs:github', 'ejs:npm']
             }
         },
         'sleep_interval_requests': 2,

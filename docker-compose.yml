@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build: .
@@ -10,4 +8,5 @@ services:
     environment:
       - FLASK_ENV=production
       - PROXY_URL=socks5://127.0.0.1:40000
+      - YTDLP_REMOTE_COMPONENTS=ejs:github,ejs:npm
     restart: always
