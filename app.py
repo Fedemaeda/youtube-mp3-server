@@ -97,7 +97,6 @@ def download():
         'ignoreerrors': False,
         'nocheckcertificate': True,
         'prefer_insecure': True,
-        'allow_unsecure_tools': True,
     }
 
     # Proxy logic
