@@ -158,7 +158,13 @@ def download():
         os.remove(downloaded_file)
 
         file_data.seek(0)
-        clean_title = info.get('title', 'video').replace('/', '_').replace('\\', '_')
+        import re
+        import urllib.parse
+        clean_title = info.get('title', 'video')
+        # Remove non-ascii and special chars, then URL-encode just in case
+        clean_title = re.sub(r'[^\w\s-]', '', clean_title).strip()
+        clean_title = urllib.parse.quote(clean_title)
+        
         mimetype = 'video/mp4' if target_format == 'mp4' else 'audio/mpeg'
         return send_file(
             file_data,
