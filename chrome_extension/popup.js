@@ -6,16 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusMessage = document.getElementById('status-message');
     const settingsBtn = document.getElementById('settings-btn');
 
-    let serverUrl = '';
+    const DEFAULT_SERVER_URL = 'http://144.22.61.82:5000';
+    let serverUrl = DEFAULT_SERVER_URL;
 
     // Load server URL from storage
     chrome.storage.sync.get(['serverUrl'], (result) => {
         if (result.serverUrl) {
             serverUrl = result.serverUrl.replace(/\/$/, ""); // Remove trailing slash
-        } else {
-            setStatus('Please configure your server URL first!', 'error');
-            downloadBtn.disabled = true;
         }
+        // If not set, we keep the hardcoded default
+        console.log('Using server:', serverUrl);
     });
 
     // Get current active tab URL
