@@ -1,0 +1,3 @@
+144-22-61-82.sslip.io {
+    reverse_proxy localhost:5000
+}

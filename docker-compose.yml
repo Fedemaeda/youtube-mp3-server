@@ -1,4 +1,11 @@
 services:
+  bgutil:
+    image: brainicism/bgutil-ytdlp-pot-provider:latest
+    network_mode: host
+    environment: []
+    restart: always
+    container_name: ytdownloader-bgutil-1
+
   app:
     build: .
     network_mode: host
@@ -7,6 +14,21 @@ services:
       - ./cookies.txt:/app/cookies.txt
     environment:
       - FLASK_ENV=production
-      - PROXY_URL=socks5://127.0.0.1:40000
-      - YTDLP_REMOTE_COMPONENTS=ejs:github,ejs:npm
+      - PROXY_URL=socks5h://127.0.0.1:40000
+      - POT_PROVIDER_URL=http://127.0.0.1:4416
     restart: always
+    depends_on:
+      - bgutil
+
+  caddy:
+    image: caddy:latest
+    restart: always
+    network_mode: host
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

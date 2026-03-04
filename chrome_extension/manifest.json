@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ZenRip - Media Downloader",
-  "version": "1.2",
+  "version": "1.3",
   "description": "Download videos and audio from YouTube and X.com with Zen-like simplicity using your ZenRip server.",
   "permissions": [
     "activeTab",
@@ -22,6 +22,6 @@
     "https://*.onrender.com/*",
     "https://*.ngrok-free.app/*",
     "https://*.ngrok.io/*",
-    "http://144.22.61.82:5000/*"
+    "https://144-22-61-82.sslip.io/*"
   ]
 }

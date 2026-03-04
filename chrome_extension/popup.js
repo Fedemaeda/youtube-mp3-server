@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusMessage = document.getElementById('status-message');
     const settingsBtn = document.getElementById('settings-btn');
 
-    const DEFAULT_SERVER_URL = 'http://144.22.61.82:5000';
+    const DEFAULT_SERVER_URL = 'https://144-22-61-82.sslip.io';
     let serverUrl = DEFAULT_SERVER_URL;
 
     // Load server URL from storage

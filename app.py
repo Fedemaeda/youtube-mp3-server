@@ -5,7 +5,10 @@ from flask import Flask, request, jsonify, render_template, send_file, after_thi
 from flask_cors import CORS
 import yt_dlp
 
+import logging
+
 app = Flask(__name__)
+app.logger.setLevel(logging.INFO)
 CORS(app)  # Allow cross-origin requests from the Chrome Extension
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOAD_FOLDER = os.path.join(BASE_DIR, 'downloads')
@@ -28,13 +31,31 @@ def is_proxy_reachable(proxy_url):
     return False
 
 def get_po_token():
-    """Fetch a PO token from the environment or a sidecar service."""
+    """Fetch a PO token from the bgutil sidecar service or environment."""
     # Try environment variable first (manual override)
     po_token = os.environ.get('PO_TOKEN')
     if po_token:
-        return po_token, None
-        
-    # Future: Add sidecar service call here
+        visitor_data = os.environ.get('VISITOR_DATA')
+        return po_token, visitor_data
+
+    # Try bgutil sidecar service (checking multiple potential key formats)
+    pot_url = os.environ.get('POT_PROVIDER_URL', 'http://127.0.0.1:4416')
+    try:
+        app.logger.info(f"Fetching PO Token from {pot_url}/get_pot...")
+        resp = requests.post(f"{pot_url}/get_pot", json={}, timeout=60)
+        app.logger.info(f"POT provider status: {resp.status_code}")
+        if resp.status_code == 200:
+            data = resp.json()
+            # Various bgutil versions use different field names
+            token = data.get('poToken') or data.get('po_token') or data.get('potoken')
+            visitor = data.get('contentBinding') or data.get('visitor_data') or data.get('visit_identifier') or data.get('visitorData')
+            app.logger.info(f"POT found: {'Yes' if token else 'No'}, Visitor found: {'Yes' if visitor else 'No'}")
+            return token, visitor
+        else:
+            app.logger.warning(f"POT provider returned error: {resp.text}")
+    except Exception as e:
+        app.logger.warning(f"Could not reach bgutil pot provider: {e}")
+
     return None, None
 
 if not os.path.exists(DOWNLOAD_FOLDER):
@@ -58,7 +79,8 @@ def upload_cookies():
 @app.route('/api/cookies-status', methods=['GET'])
 def cookies_status():
     """Check if a cookies file has been uploaded."""
-    return jsonify({'has_cookies': os.path.exists(COOKIES_FILE)})
+    exists = os.path.exists(COOKIES_FILE)
+    return jsonify({'has_cookies': exists})
 
 @app.route('/api/download-extension')
 def download_extension():
@@ -86,37 +108,32 @@ def download():
     if not url:
         return jsonify({'error': 'URL is required'}), 400
 
+    is_youtube = 'youtube.com' in url or 'youtu.be' in url
     unique_id = str(uuid.uuid4())
     output_template = os.path.join(DOWNLOAD_FOLDER, f'%(title)s_{unique_id}.%(ext)s')
 
     ydl_opts = {
         'outtmpl': output_template,
+        'format': 'bestaudio/best' if target_format == 'mp3' else 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best',
         'noplaylist': True,
         'quiet': False,
-        'verbose': False,
-        'allow_unsecure_tools': True,
-        'remote_components': ['ejs:github', 'ejs:npm'],
-        'extractor_args': {
-            'youtube': {
-                'remote_components': ['ejs:github', 'ejs:npm']
-            }
-        },
-        'sleep_interval_requests': 2,
-        'socket_timeout': 30,
-        'ignoreerrors': False,
+        'verbose': True,
         'nocheckcertificate': True,
         'prefer_insecure': True,
+        'allow_unsecure_tools': True,
+        'sleep_interval_requests': 2,
+        'socket_timeout': 60,
+        'ignoreerrors': False,
     }
 
-    if target_format == 'mp4':
-        ydl_opts['format'] = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
-    else:  # Default to mp3
-        ydl_opts['format'] = 'bestaudio/best'
+    if target_format == 'mp3':
         ydl_opts['postprocessors'] = [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }]
+    elif target_format == 'mp4':
+        ydl_opts['merge_output_format'] = 'mp4'
 
     # Proxy logic
     if os.environ.get('FLASK_ENV') == 'production':
@@ -128,16 +145,48 @@ def download():
     else:
         app.logger.info("Running in development mode, no proxy used.")
 
-    # Fetch PO Token if on cloud (helps bypass "Sign in to confirm you're not a bot")
-    po_token, visitor_data = get_po_token()
-    if po_token and visitor_data:
-        app.logger.info("Using PO Token for download")
-        ydl_opts['extractor_args']['youtube']['po_token'] = [f"web+{po_token}"]
-        # Note: some newer versions of yt-dlp might need different formatting for extractor-args
+    # YouTube-specific bypass configurations
+    if is_youtube:
+        # Prioritize mobile clients (ios, mweb, android) which are less affected by datacenter blocks
+        # 'mweb' is particularly good for avoiding the "Sign in to confirm you're not a bot" screen.
+        ydl_opts['extractor_args'] = {
+            'youtube': {
+                'player_client': ['ios', 'mweb', 'android', 'tv', 'web'],
+                'player_skip': ['web_creator'],
+                'jsc': ['deno'],
+                # Specific version strings to look like real apps
+                'ios_ver': ['19.45.4', '17.33.2', '16.5'],
+                'android_ver': ['19.45.4', '17.33.2'],
+            }
+        }
+        
+        # Enable remote components for EJS
+        ydl_opts['remote_components'] = ['ejs:github']
 
-    # Use cookies if available (required for cloud servers blocked by YouTube)
-    if os.path.exists(COOKIES_FILE):
-        ydl_opts['cookiefile'] = COOKIES_FILE
+        # Fetch PO Token from bgutil sidecar (bypasses 'Sign in to confirm not a bot')
+        po_token, visitor_data = get_po_token()
+        if po_token:
+            app.logger.info(f"Using PO Token: {po_token[:10]}...")
+            # For 2025+, mapping the same token to all clients is the most successful approach
+            token_list = [
+                f'web+{po_token}', 
+                f'mweb+{po_token}',
+                f'ios+{po_token}', 
+                f'android+{po_token}',
+                f'tv+{po_token}'
+            ]
+            ydl_opts['extractor_args']['youtube']['po_token'] = token_list
+            
+            if visitor_data:
+                # Visitor data must match or be associated with the token generator
+                ydl_opts['extractor_args']['youtube']['visitor_data'] = [visitor_data]
+        
+        # Use cookies if available
+        if os.path.exists(COOKIES_FILE):
+            app.logger.info("Cookies file found, attaching to ydl_opts")
+            ydl_opts['cookiefile'] = COOKIES_FILE
+        else:
+            app.logger.warning("No cookies found. Datacenter IPs (Oracle) will likely be blocked without cookies.")
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -150,35 +199,50 @@ def download():
         if not os.path.exists(downloaded_file):
             return jsonify({'error': f'Failed to generate {target_format} file'}), 500
 
-        # Read the file fully into memory first, then delete it
-        # This prevents race condition where file is deleted before browser finishes downloading
-        import io
-        with open(downloaded_file, 'rb') as f:
-            file_data = io.BytesIO(f.read())
-        os.remove(downloaded_file)
-
-        file_data.seek(0)
+        # Memory efficient sending and automatic cleanup
         import re
-        clean_title = info.get('title', 'video')
-        # Replace spaces and special chars with underscores
-        clean_title = re.sub(r'[^\w\-]', '_', clean_title)
-        # Remove consecutive underscores
-        clean_title = re.sub(r'_+', '_', clean_title).strip('_')
-        # Limit length to avoid OS filename limits
-        clean_title = clean_title[:100] if clean_title else f'video_{unique_id[:8]}'
+        # Get the original title from metadata
+        original_title = info.get('title', 'video')
+        # Remove only truly illegal filesystem characters, preserve spaces/accents
+        clean_title = re.sub(r'[\\/*?:"<>|]', '', original_title)
+        # Clean up whitespace but keep single spaces
+        clean_title = ' '.join(clean_title.split()).strip()
+        # Final safety check and length limit
+        clean_title = clean_title if clean_title else f'video_{unique_id[:8]}'
+        download_name = f"{clean_title[:150]}.{target_format}"
 
         mimetype = 'video/mp4' if target_format == 'mp4' else 'audio/mpeg'
+        
+        # Schedule file deletion after the response is sent
+        @after_this_request
+        def remove_file(response):
+            try:
+                if os.path.exists(downloaded_file):
+                    os.remove(downloaded_file)
+            except Exception as e:
+                app.logger.error(f"Error removing file {downloaded_file}: {e}")
+            return response
+
         return send_file(
-            file_data,
+            downloaded_file,
             as_attachment=True,
-            download_name=f"{clean_title}.{target_format}",
+            download_name=download_name,
             mimetype=mimetype
         )
 
     except Exception as e:
+        import traceback
         error_msg = str(e)
         app.logger.error(f"Download error: {error_msg}")
+        app.logger.error(traceback.format_exc())
         
+        # Cleanup file if it exists despite the error
+        try:
+            # We don't have downloaded_file yet here if it failed early, but we can try to find it
+            pass 
+        except:
+            pass
+
         # User-friendly error for bot detection
         if "Sign in to confirm you're not a bot" in error_msg or "confirm you're not a bot" in error_msg:
             return jsonify({
@@ -188,7 +252,7 @@ def download():
         
         if "Requested format is not available" in error_msg:
             return jsonify({
-                'error': 'Requested format not available. This usually means YouTube is blocking the server. Try refreshing cookies.',
+                'error': 'Requested format not available. YouTube might be blocking the server IP. Try refreshing cookies or checking the server logs.',
                 'code': 'FORMAT_UNAVAILABLE'
             }), 400
 
