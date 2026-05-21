@@ -2,44 +2,88 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('youtube-url');
     const downloadBtn = document.getElementById('download-btn');
     const downloadMp4Btn = document.getElementById('download-mp4-btn');
-    const btnText = document.querySelector('.btn-text');
-    const spinner = document.querySelector('.spinner');
     const statusMessage = document.getElementById('status-message');
     const settingsBtn = document.getElementById('settings-btn');
-
-    const DEFAULT_SERVER_URL = '';
-    let serverUrl = DEFAULT_SERVER_URL;
-
-    // Load server URL from storage
-    chrome.storage.sync.get(['serverUrl'], (result) => {
-        if (result.serverUrl) {
-            serverUrl = result.serverUrl.replace(/\/$/, ""); // Remove trailing slash
-        }
-        console.log('Using server:', serverUrl);
-        updateServerBadge();
-    });
-
     const serverBadge = document.getElementById('server-badge');
 
-    async function updateServerBadge() {
-        if (!serverUrl) {
-            setServerStatus('Set server URL', 'info');
+    let youtubeServerUrl = '';
+    let socialServerUrl = '';
+    let activeMediaType = null;
+
+    chrome.storage.sync.get(['serverUrl', 'youtubeServerUrl', 'socialServerUrl'], (result) => {
+        const legacyUrl = (result.serverUrl || '').replace(/\/$/, '');
+        youtubeServerUrl = (result.youtubeServerUrl || '').replace(/\/$/, '');
+        socialServerUrl = (result.socialServerUrl || legacyUrl).replace(/\/$/, '');
+        chrome.tabs.query({ active: true, currentWindow: true }, handleActiveTab);
+    });
+
+    function handleActiveTab(tabs) {
+        const activeTab = tabs[0];
+        const currentUrl = activeTab?.url || '';
+        const mediaType = detectMediaType(currentUrl);
+        activeMediaType = mediaType;
+
+        if (mediaType) {
+            urlInput.value = currentUrl;
+            updateServerBadge(mediaType);
             return;
         }
+
+        urlInput.value = '';
+        urlInput.placeholder = 'No supported video found';
+        downloadBtn.disabled = true;
+        downloadMp4Btn.disabled = true;
+        urlInput.classList.add('disabled');
+        setServerStatus('Unsupported page', 'error');
+    }
+
+    function detectMediaType(url) {
+        if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
+            return 'youtube';
+        }
+        if (url.includes('x.com/') || url.includes('twitter.com/')) {
+            return 'social';
+        }
+        if (
+            url.includes('instagram.com/p/') ||
+            url.includes('instagram.com/reels/') ||
+            url.includes('instagram.com/reel/') ||
+            url.includes('instagram.com/tv/')
+        ) {
+            return 'social';
+        }
+        return null;
+    }
+
+    function getServerUrl(mediaType) {
+        return mediaType === 'youtube' ? youtubeServerUrl : socialServerUrl;
+    }
+
+    function describeServer(mediaType) {
+        return mediaType === 'youtube' ? 'YouTube -> Local' : 'X/Instagram -> Render';
+    }
+
+    async function updateServerBadge(mediaType) {
+        const serverUrl = getServerUrl(mediaType);
+        if (!serverUrl) {
+            const missingLabel = mediaType === 'youtube' ? 'Set local YouTube URL' : 'Set Render URL';
+            setServerStatus(missingLabel, 'info');
+            return;
+        }
+
         try {
             const resp = await fetch(`${serverUrl}/api/cookies-status`);
             if (resp.ok) {
                 const data = await resp.json();
-                if (data.has_cookies) {
-                    setServerStatus('Ready (Active)', 'success');
-                } else {
-                    setServerStatus('Online (Wait sync)', 'info');
-                }
+                const suffix = data.has_cookies ? 'Ready' : 'Online';
+                setServerStatus(`${describeServer(mediaType)}: ${suffix}`, data.has_cookies ? 'success' : 'info');
+                return;
             }
-        } catch (e) {
-            console.warn('Server unreachable');
-            setServerStatus('Offline', 'error');
+        } catch (error) {
+            console.warn('Server unreachable', error);
         }
+
+        setServerStatus(`${describeServer(mediaType)}: Offline`, 'error');
     }
 
     function setServerStatus(message, type) {
@@ -47,82 +91,43 @@ document.addEventListener('DOMContentLoaded', () => {
         serverBadge.className = `server-badge ${type}`;
     }
 
-    function hasConfiguredServer() {
-        return Boolean(serverUrl && /^https?:\/\//i.test(serverUrl));
-    }
-
-    // Get current active tab URL
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const activeTab = tabs[0];
-        const currentUrl = activeTab?.url || '';
-        const isYouTube = currentUrl.includes('youtube.com/watch') || currentUrl.includes('youtu.be/');
-        const isX = currentUrl.includes('x.com/') || currentUrl.includes('twitter.com/');
-        const isInstagram = currentUrl.includes('instagram.com/p/') ||
-            currentUrl.includes('instagram.com/reels/') ||
-            currentUrl.includes('instagram.com/reel/') ||
-            currentUrl.includes('instagram.com/tv/');
-
-        if (isYouTube || isX || isInstagram) {
-            urlInput.value = currentUrl;
-        } else {
-            urlInput.value = '';
-            urlInput.placeholder = 'No supported video found';
-            downloadBtn.disabled = true;
-            downloadMp4Btn.disabled = true;
-            urlInput.classList.add('disabled');
-        }
-    });
-
     function setStatus(message, type) {
         statusMessage.textContent = message;
         statusMessage.className = `status-message ${type}`;
-        
-        // Add a subtle fade-in effect via class
         statusMessage.style.opacity = '0';
         setTimeout(() => {
             statusMessage.style.opacity = '1';
         }, 10);
     }
 
-    // Open settings page
-    settingsBtn.addEventListener('click', () => {
-        chrome.runtime.openOptionsPage();
-    });
-
-    // Handle download clicks
-    downloadBtn.addEventListener('click', () => handleDownload('mp3', downloadBtn));
-    downloadMp4Btn.addEventListener('click', () => handleDownload('mp4', downloadMp4Btn));
-
-    async function getCookiesForDomain(url) {
+    function getCookiesForDomain(url) {
         const domain = new URL(url).hostname;
-        // Get cookies for the main domain (e.g., .youtube.com)
         const baseDomain = domain.split('.').slice(-2).join('.');
         return new Promise((resolve) => {
             chrome.cookies.getAll({ domain: baseDomain }, (cookies) => {
-                // Filter out some unnecessary cookies if needed, but let's send them all
                 resolve(cookies);
             });
         });
     }
 
-    async function syncCookies(url) {
+    async function syncCookies(url, serverUrl) {
         try {
             setStatus('Synchronizing session...', 'info');
             const cookies = await getCookiesForDomain(url);
-            
             if (!cookies || cookies.length === 0) {
-                console.log('No cookies found for domain');
-                return false; 
+                return false;
             }
 
             const resp = await fetch(`${serverUrl}/api/sync-cookies-json`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cookies: cookies })
+                body: JSON.stringify({ cookies })
             });
-            
-            if (!resp.ok) throw new Error('Sync failed server-side');
-            
+
+            if (!resp.ok) {
+                throw new Error('Sync failed server-side');
+            }
+
             const data = await resp.json();
             return data.success;
         } catch (error) {
@@ -132,49 +137,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function handleDownload(format, btn) {
-        if (!hasConfiguredServer()) {
-            setStatus('Please configure your online server URL first.', 'error');
+        const url = urlInput.value;
+        if (!url || !activeMediaType) {
             return;
         }
-        const url = urlInput.value;
-        if (!url) return;
+
+        const serverUrl = getServerUrl(activeMediaType);
+        if (!serverUrl || !/^https?:\/\//i.test(serverUrl)) {
+            const configMessage = activeMediaType === 'youtube'
+                ? 'Configure your local YouTube server URL first.'
+                : 'Configure your Render server URL first.';
+            setStatus(configMessage, 'error');
+            return;
+        }
 
         const btnText = btn.querySelector('.btn-text');
         const spinner = btn.querySelector('.spinner');
-
-        // Disable both buttons during processing
         downloadBtn.disabled = true;
         downloadMp4Btn.disabled = true;
-
         btnText.style.display = 'none';
         spinner.style.display = 'block';
-        
+
         try {
             const validateResp = await fetch(`${serverUrl}/api/validate-url`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url })
             });
+
             if (!validateResp.ok) {
                 let message = 'Invalid URL';
                 try {
                     const data = await validateResp.json();
                     message = data.error || message;
-                } catch (e) {}
+                } catch (error) {
+                    console.warn(error);
+                }
                 setStatus(message, 'error');
                 resetBtns();
                 return;
             }
 
-            // Step 1: Sync cookies (especially important for Instagram/YouTube)
-            const syncSuccess = await syncCookies(url);
-            if (!syncSuccess) {
-                console.warn('Could not sync cookies. Server might use its own session.');
-            }
-
-            // Step 2: Trigger download
+            await syncCookies(url, serverUrl);
             setStatus(`Processing ${format.toUpperCase()}...`, 'info');
-            
+
             const getUrl = new URL(`${serverUrl}/api/download`);
             getUrl.searchParams.append('url', url);
             getUrl.searchParams.append('format', format);
@@ -182,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
             chrome.downloads.download({
                 url: getUrl.toString(),
                 saveAs: false,
-                // Add header to bypass some proxy warnings if any
                 headers: [
                     { name: 'X-Client-Type', value: 'ZenRip-Extension' }
                 ]
@@ -197,24 +202,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 setStatus('Requesting file...', 'info');
 
                 const listener = (delta) => {
-                    if (delta.id === downloadId && delta.state) {
-                        if (delta.state.current === 'complete') {
-                            setStatus('Download complete!', 'success');
-                            chrome.downloads.onChanged.removeListener(listener);
-                            setTimeout(() => {
-                                resetBtns();
-                                window.close();
-                            }, 2500);
-                        } else if (delta.state.current === 'interrupted') {
-                            setStatus('Download failed (Interrupted)', 'error');
-                            chrome.downloads.onChanged.removeListener(listener);
+                    if (delta.id !== downloadId || !delta.state) {
+                        return;
+                    }
+
+                    if (delta.state.current === 'complete') {
+                        setStatus('Download complete!', 'success');
+                        chrome.downloads.onChanged.removeListener(listener);
+                        setTimeout(() => {
                             resetBtns();
-                        }
+                            window.close();
+                        }, 2500);
+                    } else if (delta.state.current === 'interrupted') {
+                        setStatus('Download failed (Interrupted)', 'error');
+                        chrome.downloads.onChanged.removeListener(listener);
+                        resetBtns();
                     }
                 };
+
                 chrome.downloads.onChanged.addListener(listener);
             });
-
         } catch (error) {
             console.error(error);
             setStatus('Connection error. Is server up?', 'error');
@@ -226,10 +233,22 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadBtn.disabled = false;
         downloadMp4Btn.disabled = false;
 
-        const btns = [downloadBtn, downloadMp4Btn];
-        btns.forEach(btn => {
-            btn.querySelector('.btn-text') && (btn.querySelector('.btn-text').style.display = 'block');
-            btn.querySelector('.spinner') && (btn.querySelector('.spinner').style.display = 'none');
+        [downloadBtn, downloadMp4Btn].forEach((btn) => {
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner');
+            if (btnText) {
+                btnText.style.display = 'block';
+            }
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
         });
     }
+
+    settingsBtn.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage();
+    });
+
+    downloadBtn.addEventListener('click', () => handleDownload('mp3', downloadBtn));
+    downloadMp4Btn.addEventListener('click', () => handleDownload('mp4', downloadMp4Btn));
 });

@@ -1,26 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const serverUrlInput = document.getElementById('server-url');
+    const youtubeServerInput = document.getElementById('youtube-server-url');
+    const socialServerInput = document.getElementById('social-server-url');
     const saveBtn = document.getElementById('save-btn');
     const statusMessage = document.getElementById('status-message');
 
-    // Load saved settings
-    chrome.storage.sync.get(['serverUrl'], (result) => {
-        if (result.serverUrl) {
-            serverUrlInput.value = result.serverUrl;
-        }
+    chrome.storage.sync.get(['serverUrl', 'youtubeServerUrl', 'socialServerUrl'], (result) => {
+        const legacyUrl = result.serverUrl || '';
+        youtubeServerInput.value = result.youtubeServerUrl || '';
+        socialServerInput.value = result.socialServerUrl || legacyUrl;
     });
 
-    // Save settings
     saveBtn.addEventListener('click', () => {
-        const serverUrl = serverUrlInput.value.trim();
+        const youtubeServerUrl = youtubeServerInput.value.trim().replace(/\/$/, '');
+        const socialServerUrl = socialServerInput.value.trim().replace(/\/$/, '');
 
-        chrome.storage.sync.set({ serverUrl }, () => {
+        chrome.storage.sync.set({ youtubeServerUrl, socialServerUrl }, () => {
             statusMessage.textContent = 'Settings saved successfully!';
             statusMessage.className = 'status-message success';
             setTimeout(() => {
                 statusMessage.textContent = '';
                 statusMessage.className = 'status-message';
-                window.close(); // Close options panel
+                window.close();
             }, 1500);
         });
     });

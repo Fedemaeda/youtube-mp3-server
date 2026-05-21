@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="popup.css">
     <style>
         body {
-            width: 400px;
+            width: 430px;
             padding: 20px;
         }
 
@@ -21,10 +21,15 @@
             display: block;
         }
 
+        .field-group {
+            margin-bottom: 18px;
+        }
+
         .hint {
             font-size: 0.75rem;
             color: var(--text-secondary);
             margin-top: 5px;
+            line-height: 1.45;
         }
     </style>
 </head>
@@ -32,14 +37,20 @@
 <body>
     <div class="glass-panel">
         <header>
-            <h1>Server Settings</h1>
-            <p>Connect to your ZenRip server</p>
+            <h1>Hybrid Server Settings</h1>
+            <p>Use your PC for YouTube and Render for X/Instagram.</p>
         </header>
 
-        <div>
-            <label for="server-url">Base Server URL</label>
-            <input type="text" id="server-url" placeholder="https://your-space.hf.space">
-            <div class="hint">The URL of your Hugging Face or Render deployment.</div>
+        <div class="field-group">
+            <label for="youtube-server-url">YouTube Server URL</label>
+            <input type="text" id="youtube-server-url" placeholder="https://your-ngrok-url.ngrok-free.app">
+            <div class="hint">Point this to your local server tunnel. This is the server the extension will use for YouTube links.</div>
+        </div>
+
+        <div class="field-group">
+            <label for="social-server-url">X / Instagram Server URL</label>
+            <input type="text" id="social-server-url" placeholder="https://youtube-mp3-server-g70t.onrender.com">
+            <div class="hint">Point this to your Render deployment. This is the server the extension will use for X/Twitter and Instagram.</div>
         </div>
 
         <button id="save-btn">
