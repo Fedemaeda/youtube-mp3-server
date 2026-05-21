@@ -1,0 +1,248 @@
+[2026-05-21 13:14:38,354] INFO in app: YT-DLP Version: 2026.03.03
+[2026-05-21 13:14:38,355] INFO in app: Proxy URL: None
+[2026-05-21 13:14:38,355] INFO in app: POT Provider: http://127.0.0.1:4416
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:51936
+ * Running on http://192.168.0.65:51936
+Press CTRL+C to quit
+127.0.0.1 - - [21/May/2026 13:14:40] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:17:20] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:17:20] "GET /static/script.js HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:17:20] "GET /static/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:17:20] "GET /api/cookies-status HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:17:20] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [21/May/2026 13:17:31] "POST /api/validate-url HTTP/1.1" 200 -
+[2026-05-21 13:17:31,528] INFO in app: Download attempt 1/3
+[2026-05-21 13:17:31,528] INFO in app: Using player_client: ['android']
+[2026-05-21 13:17:31,528] INFO in app: Direct connection - fetching PO Token if available
+[2026-05-21 13:17:31,528] INFO in app: Fetching PO Token from http://127.0.0.1:4416...
+[debug] Encodings: locale cp1252, fs utf-8, pref cp1252, out cp1252 (No ANSI), error cp1252 (No ANSI), screen cp1252 (No ANSI)
+[debug] yt-dlp version stable@2026.03.03 from yt-dlp/yt-dlp [2ecc4c3bc] (pip) API
+[debug] params: {'outtmpl': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\49219423-7aa4-459b-8bde-bcb9c13b56e1.%(ext)s', 'format': 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best', 'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 30, 'ffmpeg_location': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\ffmpeg.exe', 'windowsfilenames': True, 'merge_output_format': 'mp4', 'extractor_args': {'youtube': {'player_client': ['android'], 'player_skip': ['web', 'web_creator']}}, 'cookiefile': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\cookies_49219423-7aa4-459b-8bde-bcb9c13b56e1_0.txt', 'js_runtimes': {'deno': {}}, 'remote_components': set(), 'compat_opts': set(), 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}}
+[debug] Python 3.11.5 (CPython AMD64 64bit) - Windows-10-10.0.22621-SP0 (OpenSSL 3.0.9 30 May 2023)
+[debug] exe versions: ffmpeg 8.0.1-essentials_build-www.gyan.dev (setts), ffprobe 8.0.1-essentials_build-www.gyan.dev
+[debug] Optional libraries: Cryptodome-3.19.0, brotli-1.2.0, certifi-2023.07.22, mutagen-1.47.0, requests-2.31.0 (unsupported), sqlite3-3.42.0, urllib3-2.0.5, websockets-16.0
+[debug] JS runtimes: deno-2.7.1
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib, websockets
+[debug] Plugin directories: none
+[debug] Loaded 1864 extractors
+[debug] [youtube] [pot] PO Token Providers: none
+[debug] [youtube] [pot] PO Token Cache Providers: memory
+[debug] [youtube] [pot] PO Token Cache Spec Providers: webpo
+[debug] [youtube] [jsc] JS Challenge Providers: bun (unavailable), deno, node (unavailable), quickjs (unavailable)
+[youtube] Extracting URL: https://www.youtube.com/watch?v=FUH9S44D1BM
+[youtube] FUH9S44D1BM: Downloading webpage
+[debug] [youtube] Forcing player 9f4cc5e4 in place of player 57f5d44f
+        Forcing "tv" player JS variant for player 9f4cc5e4
+        original url = /s/player/57f5d44f/player_es6.vflset/en_US/base.js
+[youtube] FUH9S44D1BM: Downloading android player API JSON
+WARNING: [youtube] FUH9S44D1BM: android client https formats require a GVS PO Token which was not provided. They will be skipped as they may yield HTTP Error 403. You can manually pass a GVS PO Token for this client with --extractor-args "youtube:po_token=android.gvs+XXX". For more information, refer to  https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide
+[debug] Sort order given by extractor: quality, res, fps, hdr:12, source, vcodec, channels, acodec, lang, proto
+[debug] Formats sorted by: hasvid, ie_pref, quality, res, fps, hdr:12(7), source, vcodec, channels, acodec, lang, proto, size, br, asr, vext, aext, hasaud, id
+[info] FUH9S44D1BM: Downloading 1 format(s): 18
+[debug] Invoking http downloader on "https://rr2---sn-p2a5o-x1xl.googlevideo.com/videoplayback?expire=1779401855&ei=HzAPasz5BZak-LAPpIPK-Qk&ip=200.68.72.105&id=o-AJQ6jecIicLcIM5x4dCfr_zYjt3vzyAYBE4KBzaXsq_f&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&cps=597&met=1779380255%2C&mh=B4&mm=31%2C29&mn=sn-p2a5o-x1xl%2Csn-x1x7dned&ms=au%2Crdu&mv=m&mvi=2&pl=24&rms=au%2Cau&gcr=ar&initcwndbps=1902500&bui=AbKmrwou4I8ApBw4AhEnO27Q9yKdTW5eRuL1eOUVPigXfsw7c9KrFjDy4QuesXkARxl37cnkf4rV4DxP&spc=96Xrv-6t_o_KgqrZJgSpuy0s5-hcHf4sP7Y_fi16XEzYWO42QMsfcnv-48VHd0ArEf4&vprv=1&svpuc=1&mime=video%2Fmp4&rqh=1&cnr=14&ratebypass=yes&dur=221.889&lmt=1742348398700955&mt=1779379763&fvip=2&fexp=51565115%2C51565682&c=ANDROID&txp=4538534&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cgcr%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AHEqNM4wRgIhAM-97sUdsW0bZUshFAAU8UxLh77jNsl-yZyLM2GP3-h5AiEA6FbXCJZ00_NMEkbRE4DwB0_bF20qPrDjNb5KZoiKfBQ%3D&lsparams=cps%2Cmet%2Cmh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Crms%2Cinitcwndbps&lsig=APaTxxMwRQIgLWsPrIlFW3przOca0qcqBLj0xO_G_XsNnd6gX1ZgyssCIQCLO15eW5l1tWXxhubXa8Hgalyo_He_k805RdSfLWeUEQ%3D%3D"
+[debug] File locking is not supported. Proceeding without locking
+[download] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\49219423-7aa4-459b-8bde-bcb9c13b56e1.mp4
+[download]   0.0% of    7.65MiB at  661.77KiB/s ETA 00:11[download]   0.0% of    7.65MiB at   75.02KiB/s ETA 01:44[download]   0.1% of    7.65MiB at  170.83KiB/s ETA 00:45[download]   0.2% of    7.65MiB at  361.06KiB/s ETA 00:21[download]   0.4% of    7.65MiB at  720.00KiB/s ETA 00:10[download]   0.8% of    7.65MiB at  773.00KiB/s ETA 00:10[download]   1.6% of    7.65MiB at    1.13MiB/s ETA 00:06[download]   3.3% of    7.65MiB at    1.60MiB/s ETA 00:04[download]   6.5% of    7.65MiB at    2.57MiB/s ETA 00:02[download]  13.1% of    7.65MiB at    4.25MiB/s ETA 00:01[download]  26.1% of    7.65MiB at    7.27MiB/s ETA 00:00[download]  52.3% of    7.65MiB at   11.84MiB/s ETA 00:00[download] 100.0% of    7.65MiB at   15.29MiB/s ETA 00:00[download] 100% of    7.65MiB in 00:00:00 at 9.71MiB/s   
+[2026-05-21 13:17:36,201] INFO in app: Successfully downloaded: d:\.gemini\antigravity\scratch\ytdownloader\downloads\49219423-7aa4-459b-8bde-bcb9c13b56e1.mp4
+127.0.0.1 - - [21/May/2026 13:17:36] "POST /api/download HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:17:42] "POST /api/validate-url HTTP/1.1" 200 -
+[2026-05-21 13:17:42,443] INFO in app: Download attempt 1/3
+[2026-05-21 13:17:42,443] INFO in app: Using player_client: ['android']
+[2026-05-21 13:17:42,443] INFO in app: Direct connection - fetching PO Token if available
+[2026-05-21 13:17:42,443] INFO in app: Fetching PO Token from http://127.0.0.1:4416...
+[debug] Encodings: locale cp1252, fs utf-8, pref cp1252, out cp1252 (No ANSI), error cp1252 (No ANSI), screen cp1252 (No ANSI)
+[debug] yt-dlp version stable@2026.03.03 from yt-dlp/yt-dlp [2ecc4c3bc] (pip) API
+[debug] params: {'outtmpl': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\b2790c5e-4439-45ec-8ee2-74ad100f667d.%(ext)s', 'format': 'bestaudio/best', 'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 30, 'ffmpeg_location': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\ffmpeg.exe', 'windowsfilenames': True, 'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}], 'extractor_args': {'youtube': {'player_client': ['android'], 'player_skip': ['web', 'web_creator']}}, 'cookiefile': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\cookies_b2790c5e-4439-45ec-8ee2-74ad100f667d_0.txt', 'js_runtimes': {'deno': {}}, 'remote_components': set(), 'compat_opts': set(), 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}}
+[debug] Python 3.11.5 (CPython AMD64 64bit) - Windows-10-10.0.22621-SP0 (OpenSSL 3.0.9 30 May 2023)
+[debug] exe versions: ffmpeg 8.0.1-essentials_build-www.gyan.dev (setts), ffprobe 8.0.1-essentials_build-www.gyan.dev
+[debug] Optional libraries: Cryptodome-3.19.0, brotli-1.2.0, certifi-2023.07.22, mutagen-1.47.0, requests-2.31.0 (unsupported), sqlite3-3.42.0, urllib3-2.0.5, websockets-16.0
+[debug] JS runtimes: deno-2.7.1
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib, websockets
+[debug] Plugin directories: none
+[debug] Loaded 1864 extractors
+[debug] [youtube] [pot] PO Token Providers: none
+[debug] [youtube] [pot] PO Token Cache Providers: memory
+[debug] [youtube] [pot] PO Token Cache Spec Providers: webpo
+[debug] [youtube] [jsc] JS Challenge Providers: bun (unavailable), deno, node (unavailable), quickjs (unavailable)
+[youtube] Extracting URL: https://www.youtube.com/watch?v=FUH9S44D1BM
+[youtube] FUH9S44D1BM: Downloading webpage
+[debug] [youtube] Forcing player 9f4cc5e4 in place of player 57f5d44f
+        Forcing "tv" player JS variant for player 9f4cc5e4
+        original url = /s/player/57f5d44f/player_es6.vflset/en_US/base.js
+[youtube] FUH9S44D1BM: Downloading android player API JSON
+WARNING: [youtube] FUH9S44D1BM: Some android client https formats have been skipped as they are missing a URL. YouTube may have enabled the SABR-only streaming experiment for the current session. See  https://github.com/yt-dlp/yt-dlp/issues/12482  for more details
+[debug] Sort order given by extractor: quality, res, fps, hdr:12, source, vcodec, channels, acodec, lang, proto
+[debug] Formats sorted by: hasvid, ie_pref, quality, res, fps, hdr:12(7), source, vcodec, channels, acodec, lang, proto, size, br, asr, vext, aext, hasaud, id
+[info] FUH9S44D1BM: Downloading 1 format(s): 18
+[debug] Invoking http downloader on "https://rr2---sn-p2a5o-x1xl.googlevideo.com/videoplayback?expire=1779401865&ei=KTAPatLlFPiOg-UPlYDcyAk&ip=200.68.72.105&id=o-AMxjtmVdGsaOoziHu11yy4uwwhqwIEjHhq_nyYRiJHKa&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&cps=648&met=1779380265%2C&mh=B4&mm=18%2C29&mn=sn-p2a5o-x1xl%2Csn-x1x7dned&ms=aub%2Crdu&mv=m&mvi=2&pl=24&rms=aub%2Caub&gcr=ar&initcwndbps=1877500&bui=AbKmrwpIouCOnratGgnpR8nru7vdHHDHgirXTFXnXdwXR1K41NTe1HODpwrXmovT_ugn5xr7CGy0uuOH&spc=96Xrv4t7D0BeLxdxjN7BOBUWGVQQ8KJ_PHKuIu1mtoln8x2rnV4FmWGXYi5j_vQjmsw&vprv=1&svpuc=1&mime=video%2Fmp4&rqh=1&cnr=14&ratebypass=yes&dur=221.889&lmt=1742348398700955&mt=1779379941&fvip=2&fexp=51565116%2C51565681&c=ANDROID&txp=4538534&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cgcr%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AHEqNM4wRAIgazflduNlTfgJZJ0rmasNdnsDzM8QSCQ_BB6Xp9-LvHYCIHJHxYWCktDpZqbrFlKY5Xnx73lcgNmwXb_Uz4NItK-S&lsparams=cps%2Cmet%2Cmh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Crms%2Cinitcwndbps&lsig=APaTxxMwRQIhAJ_4wshXhfhTTG6q41p4QKwpKu6BO5W39LVwYdNuqTrKAiBqBSgolgvUCxQpeXdsqLyVDGVeRvDmGkutrGdqnRzLFA%3D%3D"
+[debug] File locking is not supported. Proceeding without locking
+[download] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\b2790c5e-4439-45ec-8ee2-74ad100f667d.mp4
+[download]   0.0% of    7.65MiB at   68.73KiB/s ETA 01:53[download]   0.0% of    7.65MiB at  181.32KiB/s ETA 00:43[download]   0.1% of    7.65MiB at  399.09KiB/s ETA 00:19[download]   0.2% of    7.65MiB at  809.22KiB/s ETA 00:09[download]   0.4% of    7.65MiB at    1.63MiB/s ETA 00:04[download]   0.8% of    7.65MiB at    3.15MiB/s ETA 00:02[download]   1.6% of    7.65MiB at  272.00KiB/s ETA 00:28[download]   3.3% of    7.65MiB at  462.85KiB/s ETA 00:16[download]   6.5% of    7.65MiB at  712.74KiB/s ETA 00:10[download]  13.1% of    7.65MiB at  992.01KiB/s ETA 00:06[download]  26.1% of    7.65MiB at    1.45MiB/s ETA 00:03[download]  52.3% of    7.65MiB at    2.11MiB/s ETA 00:01[download] 100.0% of    7.65MiB at    2.75MiB/s ETA 00:00[download] 100% of    7.65MiB in 00:00:03 at 2.37MiB/s   
+[debug] ffmpeg command line: d:\.gemini\antigravity\scratch\ytdownloader\ffprobe.exe -show_streams file:d:\.gemini\antigravity\scratch\ytdownloader\downloads\b2790c5e-4439-45ec-8ee2-74ad100f667d.mp4
+[ExtractAudio] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\b2790c5e-4439-45ec-8ee2-74ad100f667d.mp3
+[debug] ffmpeg command line: d:\.gemini\antigravity\scratch\ytdownloader\ffmpeg.exe -y -loglevel repeat+info -i file:d:\.gemini\antigravity\scratch\ytdownloader\downloads\b2790c5e-4439-45ec-8ee2-74ad100f667d.mp4 -vn -acodec libmp3lame -b:a 192.0k -movflags +faststart file:d:\.gemini\antigravity\scratch\ytdownloader\downloads\b2790c5e-4439-45ec-8ee2-74ad100f667d.mp3
+Deleting original file d:\.gemini\antigravity\scratch\ytdownloader\downloads\b2790c5e-4439-45ec-8ee2-74ad100f667d.mp4 (pass -k to keep)
+[2026-05-21 13:17:56,929] INFO in app: Successfully downloaded: d:\.gemini\antigravity\scratch\ytdownloader\downloads\b2790c5e-4439-45ec-8ee2-74ad100f667d.mp3
+127.0.0.1 - - [21/May/2026 13:17:56] "POST /api/download HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:18:20] "POST /api/validate-url HTTP/1.1" 200 -
+[2026-05-21 13:18:21,033] INFO in app: Download attempt 1/3
+[debug] Encodings: locale cp1252, fs utf-8, pref cp1252, out cp1252 (No ANSI), error cp1252 (No ANSI), screen cp1252 (No ANSI)
+[debug] yt-dlp version stable@2026.03.03 from yt-dlp/yt-dlp [2ecc4c3bc] (pip) API
+[debug] params: {'outtmpl': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\bec61688-cdcb-4d2d-ba4d-dddcaf4cac71.%(ext)s', 'format': 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best', 'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 30, 'ffmpeg_location': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\ffmpeg.exe', 'windowsfilenames': True, 'merge_output_format': 'mp4', 'cookiefile': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\cookies_bec61688-cdcb-4d2d-ba4d-dddcaf4cac71_0.txt', 'js_runtimes': {'deno': {}}, 'remote_components': set(), 'compat_opts': set(), 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}}
+[debug] Python 3.11.5 (CPython AMD64 64bit) - Windows-10-10.0.22621-SP0 (OpenSSL 3.0.9 30 May 2023)
+[debug] exe versions: ffmpeg 8.0.1-essentials_build-www.gyan.dev (setts), ffprobe 8.0.1-essentials_build-www.gyan.dev
+[debug] Optional libraries: Cryptodome-3.19.0, brotli-1.2.0, certifi-2023.07.22, mutagen-1.47.0, requests-2.31.0 (unsupported), sqlite3-3.42.0, urllib3-2.0.5, websockets-16.0
+[debug] JS runtimes: deno-2.7.1
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib, websockets
+[debug] Plugin directories: none
+[debug] Loaded 1864 extractors
+[twitter] Extracting URL: https://x.com/Sudamericana/status/2057263247628149183
+[twitter] 2057263247628149183: Downloading guest token
+[twitter] 2057263247628149183: Downloading GraphQL JSON
+[debug] [twitter] Extracting from video info: 2057263146503376896
+[twitter] 2057263247628149183: Downloading m3u8 information
+[debug] Sort order given by extractor: res, proto:m3u8, br, size
+[debug] Formats sorted by: hasvid, ie_pref, res, proto:m3u8(8), br, size, lang, quality, fps, hdr:12(7), vcodec, channels, acodec, asr, vext, aext, hasaud, source, id
+[info] 2057263146503376896: Downloading 1 format(s): http-10368
+[debug] Invoking http downloader on "https://video.twimg.com/amplify_video/2057263146503376896/vid/avc1/1080x1920/1MM91aHXFgFyfPGl.mp4?tag=27"
+[debug] File locking is not supported. Proceeding without locking
+[download] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\bec61688-cdcb-4d2d-ba4d-dddcaf4cac71.mp4
+[download]   0.0% of   15.59MiB at  Unknown B/s ETA Unknown[download]   0.0% of   15.59MiB at    1.47MiB/s ETA 00:10  [download]   0.0% of   15.59MiB at    1.71MiB/s ETA 00:09[download]   0.1% of   15.59MiB at    2.25MiB/s ETA 00:06[download]   0.2% of   15.59MiB at    3.56MiB/s ETA 00:04[download]   0.4% of   15.59MiB at    6.48MiB/s ETA 00:02[download]   0.8% of   15.59MiB at    2.60MiB/s ETA 00:05[download]   1.6% of   15.59MiB at    2.81MiB/s ETA 00:05[download]   3.2% of   15.59MiB at    3.88MiB/s ETA 00:03[download]   6.4% of   15.59MiB at    5.80MiB/s ETA 00:02[download]  12.8% of   15.59MiB at    9.18MiB/s ETA 00:01[download]  25.7% of   15.59MiB at    9.68MiB/s ETA 00:01[download]  51.3% of   15.59MiB at   17.43MiB/s ETA 00:00[download]  77.0% of   15.59MiB at   20.54MiB/s ETA 00:00[download] 100.0% of   15.59MiB at   20.93MiB/s ETA 00:00[download] 100% of   15.59MiB in 00:00:00 at 15.66MiB/s  
+[2026-05-21 13:18:26,161] INFO in app: Successfully downloaded: d:\.gemini\antigravity\scratch\ytdownloader\downloads\bec61688-cdcb-4d2d-ba4d-dddcaf4cac71.mp4
+127.0.0.1 - - [21/May/2026 13:18:26] "POST /api/download HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:55:45] "POST /api/validate-url HTTP/1.1" 200 -
+[2026-05-21 13:55:45,333] INFO in app: Download attempt 1/3
+[debug] Encodings: locale cp1252, fs utf-8, pref cp1252, out cp1252 (No ANSI), error cp1252 (No ANSI), screen cp1252 (No ANSI)
+[debug] yt-dlp version stable@2026.03.03 from yt-dlp/yt-dlp [2ecc4c3bc] (pip) API
+[debug] params: {'outtmpl': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\e9f5718a-9f97-41bf-9db5-7ccfe1c2849e.%(ext)s', 'format': 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best', 'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 30, 'ffmpeg_location': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\ffmpeg.exe', 'windowsfilenames': True, 'merge_output_format': 'mp4', 'cookiefile': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\cookies_e9f5718a-9f97-41bf-9db5-7ccfe1c2849e_0.txt', 'js_runtimes': {'deno': {}}, 'remote_components': set(), 'compat_opts': set(), 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}}
+[debug] Python 3.11.5 (CPython AMD64 64bit) - Windows-10-10.0.22621-SP0 (OpenSSL 3.0.9 30 May 2023)
+[debug] exe versions: ffmpeg 8.0.1-essentials_build-www.gyan.dev (setts), ffprobe 8.0.1-essentials_build-www.gyan.dev
+[debug] Optional libraries: Cryptodome-3.19.0, brotli-1.2.0, certifi-2023.07.22, mutagen-1.47.0, requests-2.31.0 (unsupported), sqlite3-3.42.0, urllib3-2.0.5, websockets-16.0
+[debug] JS runtimes: deno-2.7.1
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib, websockets
+[debug] Plugin directories: none
+[debug] Loaded 1864 extractors
+[twitter] Extracting URL: https://x.com/Sudamericana/status/2057263247628149183
+[twitter] 2057263247628149183: Downloading guest token
+[twitter] 2057263247628149183: Downloading GraphQL JSON
+[debug] [twitter] Extracting from video info: 2057263146503376896
+[twitter] 2057263247628149183: Downloading m3u8 information
+[debug] Sort order given by extractor: res, proto:m3u8, br, size
+[debug] Formats sorted by: hasvid, ie_pref, res, proto:m3u8(8), br, size, lang, quality, fps, hdr:12(7), vcodec, channels, acodec, asr, vext, aext, hasaud, source, id
+[info] 2057263146503376896: Downloading 1 format(s): http-10368
+[debug] Invoking http downloader on "https://video.twimg.com/amplify_video/2057263146503376896/vid/avc1/1080x1920/1MM91aHXFgFyfPGl.mp4?tag=27"
+[debug] File locking is not supported. Proceeding without locking
+[download] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\e9f5718a-9f97-41bf-9db5-7ccfe1c2849e.mp4
+[download]   0.0% of   15.59MiB at  663.24KiB/s ETA 00:24[download]   0.0% of   15.59MiB at  875.21KiB/s ETA 00:18[download]   0.0% of   15.59MiB at    1.54MiB/s ETA 00:10[download]   0.1% of   15.59MiB at    2.70MiB/s ETA 00:05[download]   0.2% of   15.59MiB at    4.71MiB/s ETA 00:03[download]   0.4% of   15.59MiB at    7.30MiB/s ETA 00:02[download]   0.8% of   15.59MiB at    3.82MiB/s ETA 00:04[download]   1.6% of   15.59MiB at    4.46MiB/s ETA 00:03[download]   3.2% of   15.59MiB at    6.41MiB/s ETA 00:02[download]   6.4% of   15.59MiB at    9.41MiB/s ETA 00:01[download]  12.8% of   15.59MiB at   14.61MiB/s ETA 00:00[download]  25.7% of   15.59MiB at   21.30MiB/s ETA 00:00[download]  51.3% of   15.59MiB at   25.42MiB/s ETA 00:00[download]  77.0% of   15.59MiB at   27.76MiB/s ETA 00:00[download] 100.0% of   15.59MiB at   28.24MiB/s ETA 00:00[download] 100% of   15.59MiB in 00:00:00 at 24.65MiB/s  
+[2026-05-21 13:55:47,328] INFO in app: Successfully downloaded: d:\.gemini\antigravity\scratch\ytdownloader\downloads\e9f5718a-9f97-41bf-9db5-7ccfe1c2849e.mp4
+127.0.0.1 - - [21/May/2026 13:55:47] "POST /api/download HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:20] "POST /api/validate-url HTTP/1.1" 200 -
+[2026-05-21 13:58:20,615] INFO in app: Download attempt 1/3
+[debug] Encodings: locale cp1252, fs utf-8, pref cp1252, out cp1252 (No ANSI), error cp1252 (No ANSI), screen cp1252 (No ANSI)
+[debug] yt-dlp version stable@2026.03.03 from yt-dlp/yt-dlp [2ecc4c3bc] (pip) API
+[debug] params: {'outtmpl': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\244d8d41-b526-47fc-9009-3c104f3dde3a.%(ext)s', 'format': 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best', 'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 30, 'ffmpeg_location': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\ffmpeg.exe', 'windowsfilenames': True, 'merge_output_format': 'mp4', 'cookiefile': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\cookies_244d8d41-b526-47fc-9009-3c104f3dde3a_0.txt', 'js_runtimes': {'deno': {}}, 'remote_components': set(), 'compat_opts': set(), 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}}
+[debug] Python 3.11.5 (CPython AMD64 64bit) - Windows-10-10.0.22621-SP0 (OpenSSL 3.0.9 30 May 2023)
+[debug] exe versions: ffmpeg 8.0.1-essentials_build-www.gyan.dev (setts), ffprobe 8.0.1-essentials_build-www.gyan.dev
+[debug] Optional libraries: Cryptodome-3.19.0, brotli-1.2.0, certifi-2023.07.22, mutagen-1.47.0, requests-2.31.0 (unsupported), sqlite3-3.42.0, urllib3-2.0.5, websockets-16.0
+[debug] JS runtimes: deno-2.7.1
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib, websockets
+[debug] Plugin directories: none
+[debug] Loaded 1864 extractors
+[twitter] Extracting URL: https://x.com/Sudamericana/status/2057263247628149183
+[twitter] 2057263247628149183: Downloading guest token
+[twitter] 2057263247628149183: Downloading GraphQL JSON
+[debug] [twitter] Extracting from video info: 2057263146503376896
+[twitter] 2057263247628149183: Downloading m3u8 information
+[debug] Sort order given by extractor: res, proto:m3u8, br, size
+[debug] Formats sorted by: hasvid, ie_pref, res, proto:m3u8(8), br, size, lang, quality, fps, hdr:12(7), vcodec, channels, acodec, asr, vext, aext, hasaud, source, id
+[info] 2057263146503376896: Downloading 1 format(s): http-10368
+[debug] Invoking http downloader on "https://video.twimg.com/amplify_video/2057263146503376896/vid/avc1/1080x1920/1MM91aHXFgFyfPGl.mp4?tag=27"
+[debug] File locking is not supported. Proceeding without locking
+[download] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\244d8d41-b526-47fc-9009-3c104f3dde3a.mp4
+[download]   0.0% of   15.59MiB at  Unknown B/s ETA Unknown[download]   0.0% of   15.59MiB at    2.93MiB/s ETA 00:05  [download]   0.0% of   15.59MiB at    6.83MiB/s ETA 00:02[download]   0.1% of   15.59MiB at    4.89MiB/s ETA 00:03[download]   0.2% of   15.59MiB at    3.55MiB/s ETA 00:04[download]   0.4% of   15.59MiB at    4.49MiB/s ETA 00:03[download]   0.8% of   15.59MiB at    2.66MiB/s ETA 00:05[download]   1.6% of   15.59MiB at    2.98MiB/s ETA 00:05[download]   3.2% of   15.59MiB at    4.13MiB/s ETA 00:03[download]   6.4% of   15.59MiB at    6.19MiB/s ETA 00:02[download]  12.8% of   15.59MiB at    9.82MiB/s ETA 00:01[download]  25.7% of   15.59MiB at   15.27MiB/s ETA 00:00[download]  51.3% of   15.59MiB at   17.72MiB/s ETA 00:00[download]  77.0% of   15.59MiB at   20.45MiB/s ETA 00:00[download] 100.0% of   15.59MiB at   21.62MiB/s ETA 00:00[download] 100% of   15.59MiB in 00:00:00 at 18.37MiB/s  
+[2026-05-21 13:58:22,398] INFO in app: Successfully downloaded: d:\.gemini\antigravity\scratch\ytdownloader\downloads\244d8d41-b526-47fc-9009-3c104f3dde3a.mp4
+127.0.0.1 - - [21/May/2026 13:58:22] "POST /api/download HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:33] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:33] "GET /static/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:33] "GET /static/script.js HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:33] "GET /api/cookies-status HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET /static/styles.css HTTP/1.1" 304 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET /static/script.js HTTP/1.1" 304 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET /api/cookies-status HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET /static/script.js HTTP/1.1" 304 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET /static/styles.css HTTP/1.1" 304 -
+127.0.0.1 - - [21/May/2026 13:58:34] "GET /api/cookies-status HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:36] "POST /api/validate-url HTTP/1.1" 200 -
+[2026-05-21 13:58:36,853] INFO in app: Download attempt 1/3
+[debug] Encodings: locale cp1252, fs utf-8, pref cp1252, out cp1252 (No ANSI), error cp1252 (No ANSI), screen cp1252 (No ANSI)
+[debug] yt-dlp version stable@2026.03.03 from yt-dlp/yt-dlp [2ecc4c3bc] (pip) API
+[debug] params: {'outtmpl': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\1a952d75-a5df-4c6e-8474-6db6c1588cef.%(ext)s', 'format': 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best', 'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 30, 'ffmpeg_location': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\ffmpeg.exe', 'windowsfilenames': True, 'merge_output_format': 'mp4', 'cookiefile': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\cookies_1a952d75-a5df-4c6e-8474-6db6c1588cef_0.txt', 'js_runtimes': {'deno': {}}, 'remote_components': set(), 'compat_opts': set(), 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}}
+[debug] Python 3.11.5 (CPython AMD64 64bit) - Windows-10-10.0.22621-SP0 (OpenSSL 3.0.9 30 May 2023)
+[debug] exe versions: ffmpeg 8.0.1-essentials_build-www.gyan.dev (setts), ffprobe 8.0.1-essentials_build-www.gyan.dev
+[debug] Optional libraries: Cryptodome-3.19.0, brotli-1.2.0, certifi-2023.07.22, mutagen-1.47.0, requests-2.31.0 (unsupported), sqlite3-3.42.0, urllib3-2.0.5, websockets-16.0
+[debug] JS runtimes: deno-2.7.1
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib, websockets
+[debug] Plugin directories: none
+[debug] Loaded 1864 extractors
+[twitter] Extracting URL: https://x.com/Sudamericana/status/2057263247628149183
+[twitter] 2057263247628149183: Downloading guest token
+[twitter] 2057263247628149183: Downloading GraphQL JSON
+[debug] [twitter] Extracting from video info: 2057263146503376896
+[twitter] 2057263247628149183: Downloading m3u8 information
+[debug] Sort order given by extractor: res, proto:m3u8, br, size
+[debug] Formats sorted by: hasvid, ie_pref, res, proto:m3u8(8), br, size, lang, quality, fps, hdr:12(7), vcodec, channels, acodec, asr, vext, aext, hasaud, source, id
+[info] 2057263146503376896: Downloading 1 format(s): http-10368
+[debug] Invoking http downloader on "https://video.twimg.com/amplify_video/2057263146503376896/vid/avc1/1080x1920/1MM91aHXFgFyfPGl.mp4?tag=27"
+[debug] File locking is not supported. Proceeding without locking
+[download] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\1a952d75-a5df-4c6e-8474-6db6c1588cef.mp4
+[download]   0.0% of   15.59MiB at  Unknown B/s ETA Unknown[download]   0.0% of   15.59MiB at    1.95MiB/s ETA 00:07  [download]   0.0% of   15.59MiB at    3.35MiB/s ETA 00:04[download]   0.1% of   15.59MiB at    7.17MiB/s ETA 00:02[download]   0.2% of   15.59MiB at    8.54MiB/s ETA 00:01[download]   0.4% of   15.59MiB at   11.10MiB/s ETA 00:01[download]   0.8% of   15.59MiB at    2.79MiB/s ETA 00:05[download]   1.6% of   15.59MiB at    3.03MiB/s ETA 00:05[download]   3.2% of   15.59MiB at    4.18MiB/s ETA 00:03[download]   6.4% of   15.59MiB at    6.35MiB/s ETA 00:02[download]  12.8% of   15.59MiB at    9.88MiB/s ETA 00:01[download]  25.7% of   15.59MiB at   11.69MiB/s ETA 00:00[download]  51.3% of   15.59MiB at   18.68MiB/s ETA 00:00[download]  77.0% of   15.59MiB at   20.32MiB/s ETA 00:00[download] 100.0% of   15.59MiB at   21.51MiB/s ETA 00:00[download] 100% of   15.59MiB in 00:00:00 at 17.82MiB/s  
+[2026-05-21 13:58:38,289] INFO in app: Successfully downloaded: d:\.gemini\antigravity\scratch\ytdownloader\downloads\1a952d75-a5df-4c6e-8474-6db6c1588cef.mp4
+127.0.0.1 - - [21/May/2026 13:58:38] "POST /api/download HTTP/1.1" 200 -
+127.0.0.1 - - [21/May/2026 13:58:59] "POST /api/validate-url HTTP/1.1" 200 -
+[2026-05-21 13:58:59,368] INFO in app: Download attempt 1/3
+[2026-05-21 13:58:59,369] INFO in app: Using player_client: ['android']
+[2026-05-21 13:58:59,369] INFO in app: Direct connection - fetching PO Token if available
+[2026-05-21 13:58:59,369] INFO in app: Fetching PO Token from http://127.0.0.1:4416...
+[debug] Encodings: locale cp1252, fs utf-8, pref cp1252, out cp1252 (No ANSI), error cp1252 (No ANSI), screen cp1252 (No ANSI)
+[debug] yt-dlp version stable@2026.03.03 from yt-dlp/yt-dlp [2ecc4c3bc] (pip) API
+[debug] params: {'outtmpl': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\21f44c7a-53bd-4715-801b-4fb9095ea7d9.%(ext)s', 'format': 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best', 'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 30, 'ffmpeg_location': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\ffmpeg.exe', 'windowsfilenames': True, 'merge_output_format': 'mp4', 'extractor_args': {'youtube': {'player_client': ['android'], 'player_skip': ['web', 'web_creator']}}, 'cookiefile': 'd:\\.gemini\\antigravity\\scratch\\ytdownloader\\downloads\\cookies_21f44c7a-53bd-4715-801b-4fb9095ea7d9_0.txt', 'js_runtimes': {'deno': {}}, 'remote_components': set(), 'compat_opts': set(), 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}}
+[debug] Python 3.11.5 (CPython AMD64 64bit) - Windows-10-10.0.22621-SP0 (OpenSSL 3.0.9 30 May 2023)
+[debug] exe versions: ffmpeg 8.0.1-essentials_build-www.gyan.dev (setts), ffprobe 8.0.1-essentials_build-www.gyan.dev
+[debug] Optional libraries: Cryptodome-3.19.0, brotli-1.2.0, certifi-2023.07.22, mutagen-1.47.0, requests-2.31.0 (unsupported), sqlite3-3.42.0, urllib3-2.0.5, websockets-16.0
+[debug] JS runtimes: deno-2.7.1
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib, websockets
+[debug] Plugin directories: none
+[debug] Loaded 1864 extractors
+[debug] [youtube] [pot] PO Token Providers: none
+[debug] [youtube] [pot] PO Token Cache Providers: memory
+[debug] [youtube] [pot] PO Token Cache Spec Providers: webpo
+[debug] [youtube] [jsc] JS Challenge Providers: bun (unavailable), deno, node (unavailable), quickjs (unavailable)
+[youtube] Extracting URL: https://www.youtube.com/watch?v=FUH9S44D1BM
+[youtube] FUH9S44D1BM: Downloading webpage
+[debug] [youtube] Forcing player 9f4cc5e4 in place of player 57f5d44f
+        Forcing "tv" player JS variant for player 9f4cc5e4
+        original url = /s/player/57f5d44f/player_es6.vflset/en_US/base.js
+[youtube] FUH9S44D1BM: Downloading android player API JSON
+WARNING: [youtube] FUH9S44D1BM: Some android client https formats have been skipped as they are missing a URL. YouTube may have enabled the SABR-only streaming experiment for the current session. See  https://github.com/yt-dlp/yt-dlp/issues/12482  for more details
+[debug] Sort order given by extractor: quality, res, fps, hdr:12, source, vcodec, channels, acodec, lang, proto
+[debug] Formats sorted by: hasvid, ie_pref, quality, res, fps, hdr:12(7), source, vcodec, channels, acodec, lang, proto, size, br, asr, vext, aext, hasaud, id
+[info] FUH9S44D1BM: Downloading 1 format(s): 18
+[debug] Invoking http downloader on "https://rr2---sn-p2a5o-x1xl.googlevideo.com/videoplayback?expire=1779404342&ei=1jkParOLMrWwobIPie2P2AE&ip=200.68.72.105&id=o-ALIIYxIAaW9Cmu5_3c1E2BJGRDypuIZf337pbTAPFiUJ&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&cps=667&met=1779382742%2C&mh=B4&mm=31%2C29&mn=sn-p2a5o-x1xl%2Csn-x1x7dned&ms=au%2Crdu&mv=m&mvi=2&pl=24&rms=au%2Cau&pcm2=yes&gcr=ar&initcwndbps=1995000&bui=AbKmrwrqFJbV3uB9WbwwpDNSdf_Qld0W6xt_mdxOb5is6ObAkjENtxxx2yLCEQ8O0EYmqFbPI9HnQ_Wl&spc=96XrvzInJEyxb4iWx_5IVyf8SyNwjUy77k0wQEEi_yas9V7g2VDqOmVVMnDKtHH0EnM&vprv=1&svpuc=1&mime=video%2Fmp4&rqh=1&cnr=14&ratebypass=yes&dur=221.889&lmt=1742348398700955&mt=1779382399&fvip=2&fexp=51565115%2C51565681&c=ANDROID&txp=4538534&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cpcm2%2Cgcr%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AHEqNM4wRQIhAPbxBa51h7bbQL63xHnIV06nULAWDr_P8gtxEss71VztAiAr8jr1JRNuva77nVGWO4IdoUfkPSzC8lngSLZlwhha5Q%3D%3D&lsparams=cps%2Cmet%2Cmh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Crms%2Cinitcwndbps&lsig=APaTxxMwRgIhAPPr0yhi0LxYNgKbWE3a3OIu5UIraIlHxrN8w5lKwuvzAiEA2zF3S9CZk2-cA4Y_peE1xksrJM9UkkpPVwxRjAl_S4E%3D"
+[debug] File locking is not supported. Proceeding without locking
+[download] Destination: d:\.gemini\antigravity\scratch\ytdownloader\downloads\21f44c7a-53bd-4715-801b-4fb9095ea7d9.mp4
+[download]   0.0% of    7.65MiB at  Unknown B/s ETA Unknown[download]   0.0% of    7.65MiB at   83.93KiB/s ETA 01:33  [download]   0.1% of    7.65MiB at  187.62KiB/s ETA 00:41[download]   0.2% of    7.65MiB at  402.05KiB/s ETA 00:19[download]   0.4% of    7.65MiB at  707.61KiB/s ETA 00:11[download]   0.8% of    7.65MiB at  815.89KiB/s ETA 00:09[download]   1.6% of    7.65MiB at    1.12MiB/s ETA 00:06[download]   3.3% of    7.65MiB at    1.66MiB/s ETA 00:04[download]   6.5% of    7.65MiB at    2.64MiB/s ETA 00:02[download]  13.1% of    7.65MiB at    4.34MiB/s ETA 00:01[download]  26.1% of    7.65MiB at    7.42MiB/s ETA 00:00[download]  52.3% of    7.65MiB at   12.32MiB/s ETA 00:00[download] 100.0% of    7.65MiB at   14.62MiB/s ETA 00:00[download] 100% of    7.65MiB in 00:00:00 at 8.15MiB/s   
+[2026-05-21 13:59:03,982] INFO in app: Successfully downloaded: d:\.gemini\antigravity\scratch\ytdownloader\downloads\21f44c7a-53bd-4715-801b-4fb9095ea7d9.mp4
+127.0.0.1 - - [21/May/2026 13:59:04] "POST /api/download HTTP/1.1" 200 -

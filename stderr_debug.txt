@@ -1,0 +1,9 @@
+[2026-05-21 11:58:48,717] INFO in app: YT-DLP Version: 2026.03.03
+[2026-05-21 11:58:48,721] INFO in app: Port: 7860
+[2026-05-21 11:58:48,734] INFO in app: Proxy URL: None
+[2026-05-21 11:58:48,736] INFO in app: POT Provider: http://127.0.0.1:4416
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5005
+ * Running on http://192.168.0.65:5005
+Press CTRL+C to quit
