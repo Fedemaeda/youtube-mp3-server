@@ -10,28 +10,47 @@
 <body>
     <div class="glass-panel">
         <header>
-            <h1>ZenRip</h1>
-            <p>Remote Media Downloader</p>
+            <div class="logo-container">
+                <div class="logo-icon">ZR</div>
+                <div class="title-meta">
+                    <h1>ZenRip</h1>
+                    <div id="server-badge" class="server-badge">Checking server...</div>
+                </div>
+            </div>
         </header>
 
-        <div id="url-container">
-            <input type="text" id="youtube-url" readonly>
-        </div>
+        <main>
+            <div id="url-container">
+                <label for="youtube-url">Detected Media</label>
+                <input type="text" id="youtube-url" readonly placeholder="No supported video found">
+            </div>
 
-        <button id="download-btn">
-            <span class="btn-text">Download MP3</span>
-            <span class="spinner" style="display: none;"></span>
-        </button>
+            <div class="actions">
+                <button id="download-btn" class="primary-btn">
+                    <span class="btn-group">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="btn-text">Audio (MP3)</span>
+                    </span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
 
-        <button id="download-mp4-btn" class="secondary-btn">
-            <span class="btn-text">Download MP4</span>
-            <span class="spinner" style="display: none;"></span>
-        </button>
+                <button id="download-mp4-btn" class="secondary-btn">
+                    <span class="btn-group">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M15 10l5 5-5 5M4 4v7a4 4 0 004 4h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="btn-text">Video (MP4)</span>
+                    </span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+            </div>
 
-        <div id="status-message" class="status-message"></div>
+            <div id="status-message" class="status-message"></div>
+        </main>
 
         <footer>
-            <button id="settings-btn" class="text-btn">⚙️ Configure Server</button>
+            <button id="settings-btn" class="text-btn">
+                <svg class="icon-small" viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Server Settings</span>
+            </button>
         </footer>
     </div>
     <script src="popup.js"></script>

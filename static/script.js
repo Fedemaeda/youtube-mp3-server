@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submit-btn');
     const mp4Btn = document.getElementById('mp4-btn');
     const statusMessage = document.getElementById('status-message');
+    const cookieUploadBtn = document.getElementById('cookie-upload-btn');
+    const cookiesFileInput = document.getElementById('cookies-file');
+    const cookieStatus = document.getElementById('cookie-status');
 
     function setStatus(message, type) {
         statusMessage.textContent = message;
@@ -25,31 +28,66 @@ document.addEventListener('DOMContentLoaded', () => {
             btnText.style.display = 'none';
             spinner.style.display = 'block';
             setStatus(message, 'loading');
-        } else {
-            submitBtn.disabled = false;
-            mp4Btn.disabled = false;
-            btnText.style.display = 'block';
-            spinner.style.display = 'none';
+            return;
+        }
+
+        submitBtn.disabled = false;
+        mp4Btn.disabled = false;
+        btnText.style.display = 'block';
+        spinner.style.display = 'none';
+    }
+
+    function getFilenameFromDisposition(contentDisposition, fallbackName) {
+        if (!contentDisposition) {
+            return fallbackName;
+        }
+
+        const utf8Match = contentDisposition.match(/filename\*\s*=\s*UTF-8''([^;]+)/i);
+        if (utf8Match && utf8Match[1]) {
+            return decodeURIComponent(utf8Match[1]).trim();
+        }
+
+        const quotedMatch = contentDisposition.match(/filename\s*=\s*"([^"]+)"/i);
+        if (quotedMatch && quotedMatch[1]) {
+            return quotedMatch[1].trim();
+        }
+
+        const plainMatch = contentDisposition.match(/filename\s*=\s*([^;]+)/i);
+        if (plainMatch && plainMatch[1]) {
+            return plainMatch[1].trim().replace(/^"|"$/g, '');
+        }
+
+        return fallbackName;
+    }
+
+    async function validateUrl(url) {
+        const response = await fetch('/api/validate-url', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url })
+        });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || 'Unsupported URL.');
         }
     }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        handleDownload('mp3', submitBtn);
-    });
-
-    mp4Btn.addEventListener('click', () => {
-        handleDownload('mp4', mp4Btn);
-    });
-
     async function handleDownload(format, btn) {
         const url = urlInput.value.trim();
-        if (!url) return;
-
-        setLoading(true, btn, `Processing ${format.toUpperCase()}... this may take up to a minute.`);
-        clearStatus();
+        if (!url) {
+            setStatus('Paste a full YouTube, X/Twitter, or Instagram URL.', 'error');
+            return;
+        }
 
         try {
+            clearStatus();
+            setLoading(true, btn, `Processing ${format.toUpperCase()}... this may take up to a minute.`);
+
+            await validateUrl(url);
+
             const response = await fetch('/api/download', {
                 method: 'POST',
                 headers: {
@@ -63,44 +101,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.error || errorMessage;
-                } catch (e) {
+                } catch (error) {
                     errorMessage = await response.text() || response.statusText;
                 }
                 throw new Error(errorMessage);
             }
 
-            // Update status for streaming phase
             setStatus(`Streaming ${format.toUpperCase()} to browser...`, 'loading');
 
+            const backendFilename = response.headers.get('X-Download-Filename');
             const contentDisposition = response.headers.get('Content-Disposition');
-            let filename = `file.${format}`;
-            if (contentDisposition && contentDisposition.includes('attachment')) {
-                const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
-                if (filenameMatch && filenameMatch.length === 2) {
-                    filename = filenameMatch[1];
-                }
-            }
+            const filename = (backendFilename && backendFilename.trim())
+                ? backendFilename.trim()
+                : getFilenameFromDisposition(contentDisposition, `file.${format}`);
 
             const blob = await response.blob();
-
-            // Final phase: saving file
             setStatus('Saving file...', 'loading');
 
             const downloadUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = downloadUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-
+            const link = document.createElement('a');
+            link.style.display = 'none';
+            link.href = downloadUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
             window.URL.revokeObjectURL(downloadUrl);
-            document.body.removeChild(a);
 
-            setStatus('Download complete!', 'success');
+            setStatus('Download complete.', 'success');
             setTimeout(clearStatus, 3000);
             urlInput.value = '';
-
         } catch (error) {
             console.error('Download error:', error);
             setStatus(error.message, 'error');
@@ -109,45 +139,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Cookie Upload Logic ---
-    const cookieUploadBtn = document.getElementById('cookie-upload-btn');
-    const cookiesFileInput = document.getElementById('cookies-file');
-    const cookieStatus = document.getElementById('cookie-status');
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        handleDownload('mp3', submitBtn);
+    });
 
-    // Check current cookie status on load
+    mp4Btn.addEventListener('click', () => {
+        handleDownload('mp4', mp4Btn);
+    });
+
     fetch('/api/cookies-status')
-        .then(r => r.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
             if (data.has_cookies) {
-                cookieStatus.textContent = '✅ Cookies loaded — authenticated as a real user.';
+                cookieStatus.textContent = 'Cookies loaded. Authenticated as a real user.';
                 cookieStatus.className = 'cookie-status ok';
-            } else {
-                cookieStatus.textContent = '⚠️ No cookies uploaded. May fail on cloud servers.';
-                cookieStatus.className = 'cookie-status missing';
+                return;
             }
+
+            cookieStatus.textContent = 'No cookies uploaded. Downloads may fail on cloud servers.';
+            cookieStatus.className = 'cookie-status missing';
+        })
+        .catch(() => {
+            cookieStatus.textContent = 'Could not check cookie status.';
+            cookieStatus.className = 'cookie-status';
         });
 
     cookieUploadBtn.addEventListener('click', () => cookiesFileInput.click());
 
     cookiesFileInput.addEventListener('change', async () => {
         const file = cookiesFileInput.files[0];
-        if (!file) return;
+        if (!file) {
+            return;
+        }
+
         const formData = new FormData();
         formData.append('cookies', file);
         cookieStatus.textContent = 'Uploading...';
         cookieStatus.className = 'cookie-status';
+
         try {
-            const res = await fetch('/api/upload-cookies', { method: 'POST', body: formData });
-            const data = await res.json();
-            if (res.ok) {
-                cookieStatus.textContent = '✅ Cookies uploaded successfully!';
-                cookieStatus.className = 'cookie-status ok';
-            } else {
-                cookieStatus.textContent = `❌ Error: ${data.error}`;
-                cookieStatus.className = 'cookie-status';
+            const response = await fetch('/api/upload-cookies', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Upload failed.');
             }
-        } catch (e) {
-            cookieStatus.textContent = '❌ Upload failed.';
+
+            cookieStatus.textContent = 'Cookies uploaded successfully.';
+            cookieStatus.className = 'cookie-status ok';
+        } catch (error) {
+            cookieStatus.textContent = `Error: ${error.message}`;
             cookieStatus.className = 'cookie-status';
         }
     });

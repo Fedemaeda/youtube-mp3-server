@@ -7,7 +7,8 @@
     "activeTab",
     "tabs",
     "storage",
-    "downloads"
+    "downloads",
+    "cookies"
   ],
   "action": {
     "default_popup": "popup.html"
@@ -22,8 +23,10 @@
     "https://*.twitter.com/*",
     "https://*.instagram.com/*",
     "https://*.onrender.com/*",
+    "https://*.hf.space/*",
     "https://*.ngrok-free.app/*",
     "https://*.ngrok.io/*",
-    "https://144-22-61-82.sslip.io/*"
+    "https://*.sslip.io/*",
+    "http://localhost/*"
   ]
 }

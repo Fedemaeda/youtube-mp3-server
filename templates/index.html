@@ -16,12 +16,12 @@
         <div class="glass-panel">
             <header>
                 <h1>ZenRip</h1>
-                <p>Convert and download media instantly with Zen-like simplicity.</p>
+                <p>Convert and download media from supported post URLs.</p>
             </header>
 
             <form id="download-form">
                 <div class="input-group">
-                    <input type="url" id="url-input" placeholder="Paste YouTube or Instagram link here..." required
+                    <input type="url" id="url-input" placeholder="Paste a YouTube, X/Twitter, or Instagram post link..." required
                         autocomplete="off">
                 </div>
                 <div class="button-group">
@@ -38,11 +38,10 @@
 
             <div id="status-message" class="status-message"></div>
 
-            <!-- Cookie Authentication Section -->
             <details class="cookie-section">
-                <summary>🔑 Authentication (required on cloud)</summary>
+                <summary>Authentication (required on cloud)</summary>
                 <div class="cookie-content">
-                    <p class="cookie-hint">If you get a "bot" error, upload your YouTube or Instagram cookies to authenticate.</p>
+                    <p class="cookie-hint">If you get a bot or login error, upload your YouTube or Instagram cookies to authenticate.</p>
                     <ol class="cookie-steps">
                         <li>Install the <strong><a
                                     href="https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc"
@@ -60,7 +59,7 @@
             </details>
 
             <div class="extension-download">
-                <p>Download directly from YouTube/Instagram?
+                <p>Download directly from YouTube or Instagram?
                     <a href="/api/download-extension" class="download-link">Download Chrome Extension</a>
                 </p>
             </div>
