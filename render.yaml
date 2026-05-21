@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: zenrip
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: FLASK_ENV
+        value: production

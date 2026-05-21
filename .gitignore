@@ -7,3 +7,15 @@ env/
 ffmpeg.exe
 ffprobe.exe
 install_ffmpeg.ps1
+oracle_vps.key
+oracle_vps.key.pub
+cookies.txt
+cookies_extracted.txt
+*.mp3
+*.mp4
+local_test.*
+local_verify.*
+deploy_remote.ps1
+Dockerfile.render
+www.youtube.com_cookies*
+chrome_extension.rar

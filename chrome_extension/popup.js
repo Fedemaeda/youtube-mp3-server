@@ -21,11 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Get current active tab URL
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const currentUrl = tabs[0].url;
+        const currentUrl = tabs[0]?.url || '';
         const isYouTube = currentUrl.includes('youtube.com/watch') || currentUrl.includes('youtu.be/');
         const isX = currentUrl.includes('x.com/') || currentUrl.includes('twitter.com/');
+        const isInstagram = currentUrl.includes('instagram.com/p/') ||
+            currentUrl.includes('instagram.com/reels/') ||
+            currentUrl.includes('instagram.com/reel/') ||
+            currentUrl.includes('instagram.com/tv/');
 
-        if (isYouTube || isX) {
+        if (isYouTube || isX || isInstagram) {
             urlInput.value = currentUrl;
         } else {
             urlInput.value = 'No supported video found';

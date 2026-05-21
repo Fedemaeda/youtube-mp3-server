@@ -13,25 +13,29 @@ RUN apt-get update && apt-get install -y \
     ln -s /usr/bin/nodejs /usr/bin/node || true && \
     rm -rf /var/lib/apt/lists/*
 
-# Install bgutil-ytdlp-pot-provider
+# Install bgutil-ytdlp-pot-provider (Go binary)
+# We download the latest release from GitHub
 RUN curl -L https://github.com/brainicism/bgutil-ytdlp-pot-provider/releases/latest/download/bgutil-ytdlp-pot-provider-linux-amd64 -o /usr/bin/bgutil && \
     chmod +x /usr/bin/bgutil
 
 WORKDIR /app
 
+# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --upgrade yt-dlp
+RUN pip install --upgrade yt-dlp  # Ensure latest version
 
+# Copy the rest of the application
 COPY . .
 
+# Create downloads directory
 RUN mkdir -p downloads && chmod 777 downloads
 
-# Port is dynamic on Render (PORT env)
-ENV PORT=5000
-EXPOSE ${PORT}
+# Hugging Face Spaces use port 7860 by default
+ENV PORT=7860
+EXPOSE 7860
 
-# Startup script
+# Startup script to run both bgutil and gunicorn
 RUN echo "#!/bin/bash\n\
 bgutil --address 127.0.0.1:4416 &\n\
 gunicorn --bind 0.0.0.0:\$PORT app:app --workers 2 --timeout 600\n\

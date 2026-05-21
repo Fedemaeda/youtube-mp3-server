@@ -10,6 +10,7 @@ import re
 import traceback
 import random
 import glob
+import shutil
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -18,23 +19,35 @@ CORS(app)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOAD_FOLDER = os.path.join(BASE_DIR, 'downloads')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
-PROXY_URL = os.environ.get('PROXY_URL', 'socks5://host.docker.internal:40000')
+PROXY_URL = os.environ.get('PROXY_URL', '')
+POT_PROVIDER_URL = os.environ.get('POT_PROVIDER_URL', 'http://127.0.0.1:4416')
 
 if not os.path.exists(DOWNLOAD_FOLDER):
     os.makedirs(DOWNLOAD_FOLDER)
 
 import concurrent.futures
 
+def log_startup_info():
+    try:
+        import yt_dlp
+        app.logger.info(f"YT-DLP Version: {yt_dlp.version.__version__}")
+        app.logger.info(f"Port: {os.environ.get('PORT', 7860)}")
+        app.logger.info(f"Proxy URL: {PROXY_URL or 'None'}")
+        app.logger.info(f"POT Provider: {POT_PROVIDER_URL}")
+    except: pass
+
 def get_residential_proxy():
     """Fetch and verify free HTTP proxies by confirming they successfully mask the IP."""
     try:
         urls = [
              "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
+             "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt",
              "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
              "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
              "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
              "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
-             "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks5.txt"
+             "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks5.txt",
+             "https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt"
         ]
         
         all_proxies = []
@@ -74,8 +87,11 @@ def get_residential_proxy():
     return None
 
 def get_po_token():
-    """Fetch a PO token from the bgutil sidecar."""
-    pot_url = os.environ.get('POT_PROVIDER_URL', 'http://127.0.0.1:4416')
+    """Fetch a PO token from the bgutil sidecar (optional)."""
+    pot_url = POT_PROVIDER_URL
+    if not pot_url:
+        app.logger.info("No POT_PROVIDER_URL configured, skipping PO token.")
+        return None, None
     try:
         app.logger.info(f"Fetching PO Token from {pot_url}...")
         resp = requests.post(f"{pot_url}/get_pot", json={}, timeout=30)
@@ -127,11 +143,12 @@ def download():
         unique_id = str(uuid.uuid4())
         output_template = os.path.join(DOWNLOAD_FOLDER, f'%(title)s_{unique_id}.%(ext)s')
 
+        ffmpeg_path = os.path.join(BASE_DIR, 'ffmpeg.exe')
         ydl_opts = {
             'outtmpl': output_template,
             'format': 'bestaudio/best' if target_format == 'mp3' else 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best',
             'noplaylist': True, 'quiet': False, 'verbose': True, 'nocheckcertificate': True, 'prefer_insecure': True, 'socket_timeout': 60,
-            'remote_components': ['ejs:github'], 'extractor_args': {'youtube': {'jsc': ['deno']}}
+            'ffmpeg_location': ffmpeg_path if os.path.exists(ffmpeg_path) else 'ffmpeg',
         }
         if target_format == 'mp3':
             ydl_opts['postprocessors'] = [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
@@ -143,11 +160,11 @@ def download():
 
         # Different client strategies to rotate through if one is blocked
         client_combinations = [
-            ['android'],         # Seems to work best without POT right now
-            ['ios', 'android'],
-            ['tv', 'mweb'],
-            ['web_embedded'],
-            ['android_testsuite']
+            ['android'],          # Most reliable currently
+            ['ios'],              # Good second choice
+            ['mweb'],             # Mobile web
+            ['tv', 'ios'],
+            ['web_embedded']
         ]
 
         for attempt in range(attempts):
@@ -156,12 +173,15 @@ def download():
                 current_clients = client_combinations[attempt % len(client_combinations)]
                 app.logger.info(f"Using player_client: {current_clients}")
                 # Update bypass clients
-                ydl_opts['extractor_args']['youtube'].update({
+                ydl_opts['extractor_args'] = {'youtube': {
                     'player_client': current_clients,
                     'player_skip': ['web', 'web_creator']
-                })
-                # Decide proxy vs local IP (local IP needs PO Token)
-                proxy = get_residential_proxy()
+                }}
+                # Try direct connection first, only use proxies on retries
+                proxy = None
+                if attempt > 0:
+                    proxy = get_residential_proxy()
+                
                 if proxy:
                     ydl_opts['proxy'] = proxy
                     app.logger.info(f"Trying with proxy: {proxy}")
@@ -169,7 +189,7 @@ def download():
                     ydl_opts['extractor_args']['youtube'].pop('po_token', None)
                     ydl_opts['extractor_args']['youtube'].pop('visitor_data', None)
                 else:
-                    app.logger.info("Direct connection - fetching PO Token")
+                    app.logger.info("Direct connection - fetching PO Token if available")
                     pot, visitor = get_po_token()
                     if pot:
                         # Append POT for all rotated clients dynamically
@@ -188,8 +208,14 @@ def download():
             elif os.environ.get('FLASK_ENV') == 'production' and PROXY_URL:
                 ydl_opts['proxy'] = PROXY_URL
             
-            if os.path.exists(COOKIES_FILE): ydl_opts['cookiefile'] = COOKIES_FILE
-            if is_instagram: ydl_opts['user_agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            # Use a temporary copy of the cookie file so yt-dlp doesn't overwrite and ruin the original on failure
+            temp_cookie_file = None
+            if os.path.exists(COOKIES_FILE): 
+                temp_cookie_file = os.path.join(DOWNLOAD_FOLDER, f'cookies_{unique_id}_{attempt}.txt')
+                shutil.copy2(COOKIES_FILE, temp_cookie_file)
+                ydl_opts['cookiefile'] = temp_cookie_file
+                
+            if is_instagram: ydl_opts['http_headers'] = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
 
             try:
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -212,20 +238,36 @@ def download():
                 # Log more details on the error to see blocking patterns
                 if "Sign in to confirm" in last_error or "not a bot" in last_error:
                     app.logger.error("Youtube still detecting us as bot with this proxy/setup.")
+                elif "Instagram sent an empty media response" in last_error or "Instagram API is not granting access" in last_error:
+                    last_error = "Instagram blocks anonymous downloads. Please upload cookies.txt containing Instagram logged-in cookies via the web interface."
+                    app.logger.error(last_error)
+                    break # Don't retry since it's a hard auth block
                 
                 # If it's a permanent error (not a proxy/bot detect), don't bother retrying 
                 # (unless it's a proxy error, then we *do* want to retry with a different proxy)
                 if "ProxyError" not in last_error and "403" not in last_error and "timed out" not in last_error and "reset by peer" not in last_error:
                      # e.g. "Video unavailable" or "Invalud URL"
                      if "bot" not in last_error: break
-        else: return jsonify({'error': f'Failed after {attempts} attempts. Last: {last_error}'}), 500
+            finally:
+                if temp_cookie_file and os.path.exists(temp_cookie_file):
+                    try:
+                        os.remove(temp_cookie_file)
+                    except: pass
+        else: 
+            return jsonify({'error': f'Failed after {attempts} attempts. Last: {last_error}'}), 500
 
-        # Success handling - info is guaranteed to be truthy due to the check above
+        # Success handling
+        if not info:
+             return jsonify({'error': 'Download succeeded but no metadata was returned.'}), 500
+             
         original_title = info.get('title', 'video')
         clean_title = re.sub(r'[\\/*?:"<>|]', '', original_title)[:100].strip()
         download_name = f"{clean_title}.{target_format}"
         mimetype = 'video/mp4' if target_format == 'mp4' else 'audio/mpeg'
         
+        if not downloaded_file or not os.path.exists(downloaded_file):
+             return jsonify({'error': 'File was downloaded but could not be located on disk.'}), 500
+
         @after_this_request
         def remove_file(response):
             try:
@@ -238,4 +280,6 @@ def download():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000) # Gunicorn handles gunicorn, this is for dev
+    log_startup_info()
+    port = int(os.environ.get('PORT', 5005))
+    app.run(host='0.0.0.0', port=port)
