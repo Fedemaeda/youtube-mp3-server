@@ -153,6 +153,24 @@ def sanitize_download_stem(title, fallback='media', max_length=80):
     return ascii_title[:max_length].rstrip(' ._-') or fallback
 
 
+def build_youtube_attempts(has_cookies):
+    if has_cookies:
+        return [
+            {'clients': ['tv'], 'allow_missing_pot': True, 'use_cookies': True},
+            {'clients': ['web_safari'], 'allow_missing_pot': True, 'use_cookies': True},
+            {'clients': ['mweb'], 'use_cookies': True, 'fetch_po_token': True},
+            {'clients': ['android'], 'use_cookies': False, 'fetch_po_token': True},
+            {'clients': ['ios'], 'use_cookies': False, 'fetch_po_token': True},
+        ]
+
+    return [
+        {'clients': ['android'], 'use_cookies': False, 'fetch_po_token': True},
+        {'clients': ['ios'], 'use_cookies': False, 'fetch_po_token': True},
+        {'clients': ['web_safari'], 'allow_missing_pot': True, 'use_cookies': False},
+        {'clients': ['mweb'], 'use_cookies': False, 'fetch_po_token': True},
+    ]
+
+
 @app.route('/api/validate-url', methods=['POST'])
 def validate_url():
     data = request.get_json() or {}
@@ -250,27 +268,26 @@ def download():
             ydl_opts['postprocessors'] = [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
         elif target_format == 'mp4': ydl_opts['merge_output_format'] = 'mp4'
 
-        attempts = 3
+        has_cookie_file = os.path.exists(COOKIES_FILE)
+        youtube_attempts = build_youtube_attempts(has_cookie_file) if is_youtube else []
+        attempts = len(youtube_attempts) if youtube_attempts else 3
         last_error = ""
         downloaded_file, info = None, None
         success = False
 
-        client_combinations = [
-            ['android'],
-            ['ios'],
-            ['mweb'],
-        ]
-
         for attempt in range(attempts):
             app.logger.info(f"Download attempt {attempt+1}/{attempts}")
             if is_youtube:
-                current_clients = client_combinations[attempt % len(client_combinations)]
+                strategy = youtube_attempts[attempt]
+                current_clients = strategy['clients']
                 app.logger.info(f"Using player_client: {current_clients}")
                 # Update bypass clients
                 ydl_opts['extractor_args'] = {'youtube': {
                     'player_client': current_clients,
                     'player_skip': ['web', 'web_creator']
                 }}
+                if strategy.get('allow_missing_pot'):
+                    ydl_opts['extractor_args']['youtube']['formats'] = ['missing_pot']
                 # Try direct connection first, only use proxies on retries
                 proxy = None
                 if attempt > 0:
@@ -283,14 +300,15 @@ def download():
                     ydl_opts['extractor_args']['youtube'].pop('po_token', None)
                     ydl_opts['extractor_args']['youtube'].pop('visitor_data', None)
                 else:
-                    app.logger.info("Direct connection - fetching PO Token if available")
-                    pot, visitor = get_po_token()
-                    if pot:
-                        # Append POT for all rotated clients dynamically
-                        tokens = [f"{c}+{pot}" for c in current_clients if c not in ['android', 'android_testsuite']]
-                        if tokens:
-                            ydl_opts['extractor_args']['youtube']['po_token'] = tokens
-                        if visitor: ydl_opts['extractor_args']['youtube']['visitor_data'] = [visitor]
+                    if strategy.get('fetch_po_token'):
+                        app.logger.info("Direct connection - fetching PO Token if available")
+                        pot, visitor = get_po_token()
+                        if pot:
+                            tokens = [f"{c}+{pot}" for c in current_clients if c not in ['android', 'android_testsuite']]
+                            if tokens:
+                                ydl_opts['extractor_args']['youtube']['po_token'] = tokens
+                            if visitor:
+                                ydl_opts['extractor_args']['youtube']['visitor_data'] = [visitor]
                     if os.environ.get('FLASK_ENV') == 'production' and PROXY_URL:
                         try:
                             # Verify if the main datacenter proxy works
@@ -304,7 +322,8 @@ def download():
             
             # Use a temporary copy of the cookie file so yt-dlp doesn't overwrite and ruin the original on failure
             temp_cookie_file = None
-            if os.path.exists(COOKIES_FILE): 
+            use_cookie_file = has_cookie_file and (not is_youtube or strategy.get('use_cookies', True))
+            if use_cookie_file:
                 temp_cookie_file = os.path.join(DOWNLOAD_FOLDER, f'cookies_{unique_id}_{attempt}.txt')
                 shutil.copy2(COOKIES_FILE, temp_cookie_file)
                 ydl_opts['cookiefile'] = temp_cookie_file
