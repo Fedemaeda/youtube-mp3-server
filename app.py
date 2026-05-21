@@ -175,6 +175,12 @@ def should_use_configured_proxy():
     return os.environ.get('FLASK_ENV') == 'production' and bool(PROXY_URL)
 
 
+def should_use_youtube_cookies():
+    # Fresh browser cookies can help on some cloud hosts, but on a local residential
+    # connection they can trigger worse YouTube playability responses.
+    return os.environ.get('FLASK_ENV') == 'production'
+
+
 @app.route('/api/validate-url', methods=['POST'])
 def validate_url():
     data = request.get_json() or {}
@@ -273,7 +279,8 @@ def download():
         elif target_format == 'mp4': ydl_opts['merge_output_format'] = 'mp4'
 
         has_cookie_file = os.path.exists(COOKIES_FILE)
-        youtube_attempts = build_youtube_attempts(has_cookie_file) if is_youtube else []
+        youtube_has_cookies = has_cookie_file and should_use_youtube_cookies()
+        youtube_attempts = build_youtube_attempts(youtube_has_cookies) if is_youtube else []
         attempts = len(youtube_attempts) if youtube_attempts else 3
         last_error = ""
         downloaded_file, info = None, None
@@ -320,7 +327,7 @@ def download():
             
             # Use a temporary copy of the cookie file so yt-dlp doesn't overwrite and ruin the original on failure
             temp_cookie_file = None
-            use_cookie_file = has_cookie_file and (not is_youtube or strategy.get('use_cookies', True))
+            use_cookie_file = has_cookie_file and (not is_youtube or (youtube_has_cookies and strategy.get('use_cookies', True)))
             if use_cookie_file:
                 temp_cookie_file = os.path.join(DOWNLOAD_FOLDER, f'cookies_{unique_id}_{attempt}.txt')
                 shutil.copy2(COOKIES_FILE, temp_cookie_file)
