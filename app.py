@@ -171,6 +171,10 @@ def build_youtube_attempts(has_cookies):
     ]
 
 
+def should_use_configured_proxy():
+    return os.environ.get('FLASK_ENV') == 'production' and bool(PROXY_URL)
+
+
 @app.route('/api/validate-url', methods=['POST'])
 def validate_url():
     data = request.get_json() or {}
@@ -288,9 +292,11 @@ def download():
                 }}
                 if strategy.get('allow_missing_pot'):
                     ydl_opts['extractor_args']['youtube']['formats'] = ['missing_pot']
-                # Try direct connection first, only use proxies on retries
                 proxy = None
-                if attempt > 0:
+                if should_use_configured_proxy():
+                    proxy = PROXY_URL
+                    app.logger.info("Using configured production proxy for YouTube")
+                elif attempt > 0:
                     proxy = get_residential_proxy()
                 
                 if proxy:
@@ -309,14 +315,6 @@ def download():
                                 ydl_opts['extractor_args']['youtube']['po_token'] = tokens
                             if visitor:
                                 ydl_opts['extractor_args']['youtube']['visitor_data'] = [visitor]
-                    if os.environ.get('FLASK_ENV') == 'production' and PROXY_URL:
-                        try:
-                            # Verify if the main datacenter proxy works
-                            r = requests.get('https://m.youtube.com', proxies={'http': PROXY_URL, 'https': PROXY_URL}, timeout=3)
-                            if r.status_code == 200:
-                                ydl_opts['proxy'] = PROXY_URL
-                                app.logger.info(f"Using production proxy: {PROXY_URL}")
-                        except: pass
             elif os.environ.get('FLASK_ENV') == 'production' and PROXY_URL:
                 ydl_opts['proxy'] = PROXY_URL
             
