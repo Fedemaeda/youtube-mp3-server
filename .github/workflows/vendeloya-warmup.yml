@@ -1,0 +1,34 @@
+name: VendeloYa Warmup
+
+# Cross-repo warmup. Lives in this public repo because GitHub throttles
+# scheduled workflows on private repos to ~30-60 min intervals, which is
+# too sparse to keep a Vercel serverless function warm.
+# Public repos run closer to the cron schedule (5-15 min throttle).
+#
+# This workflow pings the VendeloYa /api/ping endpoint on a 1-minute
+# schedule. The endpoint has Cache-Control: no-store so every request
+# actually hits the function, keeping the container warm.
+
+on:
+  schedule:
+    - cron: '* * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: vendeloya-warmup
+  cancel-in-progress: true
+
+jobs:
+  warmup:
+    name: Ping VendeloYa
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Warmup /api/ping
+        run: |
+          set -e
+          url="https://vendeloyamarket.com.ar/api/ping"
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$url" || echo "000")
+          echo "HTTP $code"
+          if [ "$code" = "200" ]; then exit 0; fi
+          echo "Non-200 response"; exit 1
