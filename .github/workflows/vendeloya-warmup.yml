@@ -27,7 +27,7 @@ jobs:
       - name: Warmup /api/ping
         run: |
           set -e
-          url="https://vendeloyamarket.com.ar/api/ping"
+          url="https://nexodo.com.ar/api/ping"
           code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$url" || echo "000")
           echo "HTTP $code"
           if [ "$code" = "200" ]; then exit 0; fi
